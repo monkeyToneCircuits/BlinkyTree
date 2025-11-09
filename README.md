@@ -48,6 +48,8 @@ BlinkyTree/
 ```
 
 ## Hardware Requirements
+The set containing all components and pcbs can be bought here:
+[BlinkyParts.com](https://www.blinkyparts.com)
 
 ### Components
 - ATtiny85 microcontroller (8MHz internal oscillator)
@@ -68,17 +70,6 @@ BUZZER│3         6 │ LED_5ER (PWM)
       └─────────────┘
 ```
 
-**Pin Assignments (Debug Build - ISP Programming Enabled):**
-- Pin 1 (PB5/RESET): Reset/Programming
-- Pin 2 (PB3): Microphone input (ADC3) + LED_3ER shared
-- Pin 3 (PB4): Buzzer output
-- Pin 4: Ground
-- Pin 5 (PB0): LED_4ER (hardware PWM)
-- Pin 6 (PB1): LED_5ER (hardware PWM)
-- Pin 7 (PB2): LED_1ER (software PWM)
-- Pin 8: VCC
-
-**⚠️ Production Build Warning:** The release firmware disables the RESET pin to use it as LED_3ER GPIO. Once flashed, the ATtiny85 cannot be reprogrammed via ISP without using a high-voltage programmer.
 
 ## Software Setup
 
@@ -100,16 +91,6 @@ The project includes three build configurations in `platformio.ini`:
 2. **`attiny85_release`** - Production build, RESET pin disabled for LED_3ER
 3. **`attiny85_release_old`** - Production build for older hardware revision
 
-## Building and Uploading
-
-### Using VS Code
-
-1. Open the project folder in VS Code
-2. PlatformIO should detect the project automatically
-3. Use the PlatformIO toolbar at the bottom:
-   - **Build**: Click the checkmark (✓) icon
-   - **Upload**: Click the right arrow (→) icon
-   - **Clean**: Click "Clean" in the PlatformIO menu
 
 ### Using Command Line
 
@@ -126,32 +107,11 @@ pio run -e attiny85_release
 # Upload production firmware (⚠️ LAST UPLOAD POSSIBLE VIA ISP!)
 pio run -e attiny85_release --target upload
 
-# Clean build files
-pio run --target clean
-
-# Run static code analysis
-pio check --skip-packages
 ```
 
 ### ISP Programmer Connection
+At the bottom of the PCB there is a connector prepared for a standard ISP programming adapter with 6 pins. 
 
-Connect your ISP programmer to the ATtiny85:
-
-```
-Programmer    ATtiny85
-----------    --------
-MOSI      →   Pin 5 (PB0)
-MISO      →   Pin 6 (PB1)
-SCK       →   Pin 7 (PB2)
-RESET     →   Pin 1 (PB5)
-VCC       →   Pin 8
-GND       →   Pin 4
-```
-
-**Default Upload Settings:**
-- Protocol: `avrispv2`
-- Port: `COM6` (Windows) - Modify in `platformio.ini` for your system
-- Baud Rate: `19200`
 
 ## Behavior
 
@@ -186,7 +146,7 @@ GND       →   Pin 4
 - Zelda Theme
 - The First Noel
 - Imperial March
-- Gling Glöckchen
+- Kling Glöckchen
 
 ## Configuration
 
@@ -243,11 +203,6 @@ Plenty of room for customization!
 - Verify microphone circuit connection to Pin 2 (PB3)
 - Check baseline calibration value (should be ~200)
 - Adjust `BREATH_LIGHT_THRESHOLD` lower for higher sensitivity
-
-### Melodies Sound Wrong
-- Confirm buzzer connection to Pin 3 (PB4)
-- Some buzzers are polarity-sensitive
-- Adjust volume/duty cycle in audio configuration
 
 ### Can't Reprogram After Release Flash
 - This is expected behavior - RESET pin is disabled in production builds
