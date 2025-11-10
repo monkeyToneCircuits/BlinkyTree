@@ -45,6 +45,12 @@ void hardware_init(void)
 
 #ifdef RESET_PIN_AS_IO
     // PRODUCTION BUILD: All pins are dedicated, no sharing needed
+    
+    // CRITICAL: PB5 (former RESET) needs special handling
+    // First, ensure PB5 pull-up and initial state are cleared BEFORE setting as output
+    PORTB &= ~(1 << PIN_LED_3ER); // Clear PB5 state and disable pull-up FIRST
+    
+    // Then set all LED pins as outputs
     DDRB |= (1 << PIN_LED_1ER) | (1 << PIN_LED_3ER) | (1 << PIN_LED_4ER) | (1 << PIN_LED_5ER);
 
 #ifdef OLD_HARDWARE_REVISION

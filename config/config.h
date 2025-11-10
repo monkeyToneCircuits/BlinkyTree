@@ -99,10 +99,10 @@
  */
 
 // New Hardware Pin Assignments - PB5 as LED_3ER
-#define PIN_LED_1ER PB2         // Pin 7 - LED Ring 1 (software PWM)
+#define PIN_LED_1ER PB0         // Pin 5 - LED Ring 1 
 #define PIN_LED_3ER PB5         // Pin 1 - LED Ring 3 (DEDICATED - was reset pin!)
-#define PIN_LED_4ER PB0         // Pin 5 - LED Ring 4 (hardware PWM)
-#define PIN_LED_5ER PB1         // Pin 6 - LED Ring 5 (hardware PWM)
+#define PIN_LED_4ER PB2         // Pin 7 - LED Ring 4
+#define PIN_LED_5ER PB1         // Pin 6 - LED Ring 5 
 #define PIN_MIC_INPUT PB3       // Pin 2 - Microphone ADC input (DEDICATED - no sharing!)
 #define BUZZER_PIN PB4          // Pin 3 - Buzzer (dedicated, no sharing)
 
@@ -220,10 +220,10 @@
 
 // Candle Effect Base Brightness - Percentage values that scale with LED_BRIGHTNESS_DEFAULT
 // These percentages are multiplied by LED_BRIGHTNESS_DEFAULT to get actual brightness values
-#define CANDLE_TIP_BRIGHTNESS_PCT 140   // Tip LED brightness as % of LED_BRIGHTNESS_DEFAULT
-#define CANDLE_UPPER_BRIGHTNESS_PCT 75  // Upper LED brightness as % of LED_BRIGHTNESS_DEFAULT
-#define CANDLE_MIDDLE_BRIGHTNESS_PCT 50 // Middle LED brightness as % of LED_BRIGHTNESS_DEFAULT
-#define CANDLE_BASE_BRIGHTNESS_PCT 40   // Base LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_TIP_BRIGHTNESS_PCT 80   // Tip LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_UPPER_BRIGHTNESS_PCT 250  // 60 in debug - Upper LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_MIDDLE_BRIGHTNESS_PCT 15 // Middle LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_BASE_BRIGHTNESS_PCT 10   // Base LED brightness as % of LED_BRIGHTNESS_DEFAULT
 
 // Audio-Reactive Light Effect Configuration
 // LED ring activation based on musical note ranges during song playback
@@ -249,7 +249,7 @@
 #define AUDIO_NOTE_LED_5ER_MAX NOTE_E4 // LED_5ER (base): E4 (330 Hz) and below - bass notes (E4)
 
 // Candle Flicker Configuration
-#define CANDLE_UPDATE_INTERVAL_MS 130 // Candle flicker update frequency in milliseconds (lower = faster flicker)
-#define CANDLE_FLICKER_SCALE 25       // Percentage of normal flicker intensity (25% = gentler for low brightness)
+#define CANDLE_UPDATE_INTERVAL_MS 100 // Candle flicker update frequency in milliseconds (lower = faster flicker)
+#define CANDLE_FLICKER_SCALE 65       // Percentage of normal flicker intensity (25% = gentler for low brightness)
 
 #endif // CONFIG_H_
