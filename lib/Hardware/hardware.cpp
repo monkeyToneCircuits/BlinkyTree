@@ -18,7 +18,11 @@ static uint8_t led_brightness_pending[LED_COUNT_MAX] = {0};
 static volatile bool buffer_swap_pending = false;
 static volatile uint8_t pwm_counter = 0;
 static const uint8_t led_pins[LED_COUNT_MAX] = {PIN_LED_1ER, PIN_LED_3ER, PIN_LED_4ER, PIN_LED_5ER};
-static volatile bool led3_mic_reading = false;
+
+#ifndef RESET_PIN_AS_IO
+// DEBUG BUILD: Microphone sampling during PWM LOW periods
+static volatile bool mic_reading_ready = false;    // True when safe to read ADC
+#endif
 
 // ============================================================================
 // TIMER INTERRUPT FOR MILLIS COUNTER
@@ -43,29 +47,12 @@ void hardware_init(void)
     CLKPR = (1 << CLKPCE); // Enable clock prescaler change
     CLKPR = 0;             // Set prescaler to 1 (no division) = 8MHz
 
-#ifdef RESET_PIN_AS_IO
-    // PRODUCTION BUILD: All pins are dedicated, no sharing needed
-    
-    // CRITICAL: PB5 (former RESET) needs special handling
-    // First, ensure PB5 pull-up and initial state are cleared BEFORE setting as output
-    PORTB &= ~(1 << PIN_LED_3ER); // Clear PB5 state and disable pull-up FIRST
-    
-    // Then set all LED pins as outputs
-    DDRB |= (1 << PIN_LED_1ER) | (1 << PIN_LED_3ER) | (1 << PIN_LED_4ER) | (1 << PIN_LED_5ER);
 
-#ifdef OLD_HARDWARE_REVISION
-    // OLD HARDWARE: PB5 is BUZZER (former reset pin)
-    PORTB &= ~(1 << BUZZER_PIN); // Ensure PB5 (buzzer) starts LOW, disable pull-up
-#else
-    // NEW HARDWARE: PB5 is LED_3ER (former reset pin)
-    PORTB &= ~(1 << PIN_LED_3ER); // Ensure PB5 (LED_3ER) starts LOW, disable pull-up
-#endif
-
-#else
     // DEBUG BUILD: Initialize regular LED pins as outputs (exclude shared pin PB3/LED_3ER)
     DDRB |= (1 << PIN_LED_1ER) | (1 << PIN_LED_4ER) | (1 << PIN_LED_5ER);
-    // Note: PIN_LED_3ER (PB3) is handled by shared-pin functions as needed
-#endif
+    // Note: PIN_LED_3ER (PB3) starts as output, switched to input during dark windows
+    DDRB |= (1 << SHARED_PIN_MIC_LED);   // Start PB3 as output for LED
+    PORTB &= ~(1 << SHARED_PIN_MIC_LED); // Ensure LOW initially
 
 
 #if FEATURE_MICROPHONE_SENSOR
@@ -107,35 +94,63 @@ void hardware_update(void)
         buffer_swap_pending = false;
     }
 
-    // Direct PWM control for LEDs - conditional handling based on build type
-#ifdef RESET_PIN_AS_IO
-    // PRODUCTION BUILD: All pins dedicated, including LED_3ER on PB5
-    // Clear only LED pins, preserve BUZZER_PIN (PB4) and MIC_INPUT (PB3) states
+#ifndef RESET_PIN_AS_IO
+    // DEBUG BUILD: Sample microphone during PWM LOW periods of LED_3ER
+    // This allows very frequent sampling without visible LED disruption
+    
+    // Check if LED_3ER is in its LOW phase (PWM counter > brightness)
+    if (pwm_counter > led_brightness_active[LED_3ER_RING])
+    {
+        // LED_3ER is naturally OFF during this part of PWM cycle
+        // Switch PB3 to INPUT for ADC sampling
+        if (DDRB & (1 << SHARED_PIN_MIC_LED))
+        {
+            DDRB &= ~(1 << SHARED_PIN_MIC_LED); // Switch to input
+        }
+        
+        // Every MIC_SAMPLE_INTERVAL PWM cycles during LOW phase, set ready flag
+        if ((pwm_counter % MIC_SAMPLE_INTERVAL_MIN) == 0)
+        {
+            mic_reading_ready = true;
+        }
+    }
+    else
+    {
+        // LED_3ER is in HIGH phase - need PB3 as OUTPUT
+        if (!(DDRB & (1 << SHARED_PIN_MIC_LED)))
+        {
+            DDRB |= (1 << SHARED_PIN_MIC_LED); // Switch to output
+        }
+        mic_reading_ready = false;
+    }
+    
+    // Update LED PWM - preserve BUZZER_PIN (PB4) and handle PB3 separately
+    uint8_t port_state = PORTB & ~((1 << PIN_LED_1ER) | (1 << PIN_LED_4ER) | (1 << PIN_LED_5ER) | (1 << SHARED_PIN_MIC_LED));
+
+    // Set regular LED pins high if brightness > PWM counter
+    if (led_brightness_active[LED_1ER_RING] > pwm_counter)
+        port_state |= (1 << PIN_LED_1ER);
+    if (led_brightness_active[LED_4ER_RING] > pwm_counter)
+        port_state |= (1 << PIN_LED_4ER);
+    if (led_brightness_active[LED_5ER_RING] > pwm_counter)
+        port_state |= (1 << PIN_LED_5ER);
+    
+    // LED_3ER (PB3): Set HIGH only if in its HIGH phase of PWM cycle
+    if (led_brightness_active[LED_3ER_RING] > pwm_counter)
+        port_state |= (1 << SHARED_PIN_MIC_LED);
+
+#else
+    // PRODUCTION BUILD: Simple PWM for all LEDs
     uint8_t port_state = PORTB & ~((1 << PIN_LED_1ER) | (1 << PIN_LED_3ER) | (1 << PIN_LED_4ER) | (1 << PIN_LED_5ER));
 
-    // Set all LED pins high if brightness > PWM counter (use active buffer)
     if (led_brightness_active[LED_1ER_RING] > pwm_counter)
         port_state |= (1 << PIN_LED_1ER);
     if (led_brightness_active[LED_3ER_RING] > pwm_counter)
-        port_state |= (1 << PIN_LED_3ER); // PB5 in production
+        port_state |= (1 << PIN_LED_3ER);
     if (led_brightness_active[LED_4ER_RING] > pwm_counter)
         port_state |= (1 << PIN_LED_4ER);
     if (led_brightness_active[LED_5ER_RING] > pwm_counter)
         port_state |= (1 << PIN_LED_5ER);
-
-#else
-    // DEBUG BUILD: Preserve BUZZER_PIN (PB4) and SHARED_PIN (PB3) states when updating other LEDs
-    uint8_t port_state = PORTB & ~((1 << PIN_LED_1ER) | (1 << PIN_LED_4ER) | (1 << PIN_LED_5ER));
-
-    // Set regular LED pins high if brightness > PWM counter (use active buffer)
-    if (led_brightness_active[LED_1ER_RING] > pwm_counter)
-        port_state |= (1 << PIN_LED_1ER);
-    if (led_brightness_active[LED_4ER_RING] > pwm_counter)
-        port_state |= (1 << PIN_LED_4ER);
-    if (led_brightness_active[LED_5ER_RING] > pwm_counter)
-        port_state |= (1 << PIN_LED_5ER);
-
-    // LED_3ER (PB3) handled separately due to sharing with microphone
 #endif
 
     // Update LEDs while preserving buzzer pin
@@ -192,16 +207,6 @@ uint32_t hardware_get_millis(void)
 
 void hardware_microphone_init(void)
 {
-#ifdef RESET_PIN_AS_IO
-    // PRODUCTION BUILD: Microphone on dedicated PB3 (ADC3)
-    DDRB &= ~(1 << PIN_MIC_INPUT);  // PB3 as input for ADC (dedicated)
-    PORTB &= ~(1 << PIN_MIC_INPUT); // Disable pull-up (required for ADC input)
-
-    // Configure ADC for microphone input on PB3 (ADC3)
-    // Use internal 1.1V reference for stable operation regardless of battery voltage
-    ADMUX = (1 << REFS1) | (1 << MUX1) | (1 << MUX0);                  // 1.1V internal reference, ADC3 (PB3)
-    ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Enable ADC, prescaler 128 for stable readings
-#else
     // DEBUG BUILD: Configure PB3 (shared pin) as ADC input for microphone
     DDRB &= ~(1 << SHARED_PIN_MIC_LED);  // PB3 as input for ADC
     PORTB &= ~(1 << SHARED_PIN_MIC_LED); // Disable pull-up (required for ADC input)
@@ -210,7 +215,6 @@ void hardware_microphone_init(void)
     // Use internal 1.1V reference for stable operation regardless of battery voltage
     ADMUX = (1 << REFS1) | (1 << MUX1) | (1 << MUX0);                  // 1.1V internal reference, ADC3 (PB3)
     ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Enable ADC, prescaler 128 for stable readings
-#endif
 
     // Allow ADC to settle with new reference
     _delay_ms(10);
@@ -218,7 +222,20 @@ void hardware_microphone_init(void)
 
 uint16_t hardware_microphone_read(void)
 {
-    // PB3 is already set as input permanently, just read ADC
+#ifndef RESET_PIN_AS_IO
+    // DEBUG BUILD: Wait for sampling opportunity during PWM LOW period
+    uint8_t timeout = 50;
+    while (!mic_reading_ready && timeout > 0)
+    {
+        _delay_us(2);
+        timeout--;
+    }
+    
+    // Clear flag immediately to wait for next sampling opportunity
+    mic_reading_ready = false;
+#endif
+
+    // PB3 is input during LOW periods (debug) or permanently (production)
     _delay_us(5); // Brief settling delay
 
     // Single ADC conversion
@@ -267,7 +284,9 @@ void hardware_audio_set_frequency(uint16_t frequency)
     // using the same proven bit-banging approach as audio_simple_play_tone_timed()
 }
 
-void hardware_audio_stop(void) { PORTB &= ~(1 << BUZZER_PIN); }
+void hardware_audio_stop(void) { 
+    PORTB &= ~(1 << BUZZER_PIN); 
+}
 
 
 // ============================================================================

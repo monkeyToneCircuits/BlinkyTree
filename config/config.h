@@ -59,65 +59,11 @@
 // PIN ASSIGNMENTS - Conditional based on build type
 // ============================================================================
 
-#ifdef RESET_PIN_AS_IO
-
-#ifdef OLD_HARDWARE_REVISION
-/*
- * OLD HARDWARE REVISION - Reset pin disabled, used as BUZZER
- * Pin 1 (PB5): BUZZER (dedicated GPIO - no ISP possible!)
- * Pin 2 (PB3): Microphone (dedicated ADC - no sharing needed)
- * Pin 3 (PB4): LED_3ER (dedicated - no sharing!)
- * Pin 4 (GND): Ground
- * Pin 5 (PB0): LED_4ER (hardware PWM)
- * Pin 6 (PB1): LED_5ER (hardware PWM)
- * Pin 7 (PB2): LED_1ER (software PWM)
- * Pin 8 (VCC): +3V Power
- */
-
-// Old Hardware Pin Assignments - PB5 as BUZZER
-#define PIN_LED_1ER PB2   // Pin 7 - LED Ring 1 (software PWM)
-#define PIN_LED_3ER PB4   // Pin 3 - LED Ring 3 (DEDICATED - was shared in debug!)
-#define PIN_LED_4ER PB0   // Pin 5 - LED Ring 4 (hardware PWM)
-#define PIN_LED_5ER PB1   // Pin 6 - LED Ring 5 (hardware PWM)
-#define PIN_MIC_INPUT PB3 // Pin 2 - Microphone ADC input (DEDICATED - no sharing!)
-#define BUZZER_PIN PB5    // Pin 1 - BUZZER (was reset pin!)
-
-// No shared pins in old hardware production build
-#define SHARED_PIN_MIC_LED 0xFF // No shared pin - all dedicated
-
-#else
-/*
- * NEW HARDWARE REVISION - Reset pin disabled, used as LED_3ER
- * Pin 1 (PB5): LED_3ER (dedicated GPIO - no ISP possible!)
- * Pin 2 (PB3): Microphone (dedicated ADC - no sharing needed)
- * Pin 3 (PB4): Buzzer (dedicated)
- * Pin 4 (GND): Ground
- * Pin 5 (PB0): LED_4ER (hardware PWM)
- * Pin 6 (PB1): LED_5ER (hardware PWM)
- * Pin 7 (PB2): LED_1ER (software PWM)
- * Pin 8 (VCC): +3V Power
- */
-
-// New Hardware Pin Assignments - PB5 as LED_3ER
-#define PIN_LED_1ER PB0         // Pin 5 - LED Ring 1 
-#define PIN_LED_3ER PB5         // Pin 1 - LED Ring 3 (DEDICATED - was reset pin!)
-#define PIN_LED_4ER PB2         // Pin 7 - LED Ring 4
-#define PIN_LED_5ER PB1         // Pin 6 - LED Ring 5 
-#define PIN_MIC_INPUT PB3       // Pin 2 - Microphone ADC input (DEDICATED - no sharing!)
-#define BUZZER_PIN PB4          // Pin 3 - Buzzer (dedicated, no sharing)
-
-// No shared pins in new hardware production build
-#define SHARED_PIN_MIC_LED 0xFF // No shared pin - all dedicated
-
-#endif // OLD_HARDWARE_REVISION
-
-#else
-
 // Debug Pin Assignments - Reset pin reserved for ISP
 #define PIN_RESET PB5          // Pin 1 - Reset/Programming (always functional)
-#define PIN_LED_1ER PB2        // Pin 7 - LED Ring 1 (software PWM)
+#define PIN_LED_1ER PB0        // Pin 7 - LED Ring 1 (software PWM)
 #define PIN_LED_3ER PB3        // Pin 2 - LED Ring 3 (SHARED with microphone - time-multiplexed)
-#define PIN_LED_4ER PB0        // Pin 5 - LED Ring 4 (hardware PWM)
+#define PIN_LED_4ER PB2        // Pin 5 - LED Ring 4 (hardware PWM)
 #define PIN_LED_5ER PB1        // Pin 6 - LED Ring 5 (hardware PWM)
 #define PIN_MIC_INPUT PB3      // Pin 2 - Microphone ADC input (shared with LED_3ER)
 #define BUZZER_PIN PB4         // Pin 3 - Buzzer (dedicated, no sharing)
@@ -133,7 +79,6 @@
 #define ISP_PIN_VCC 8          // Pin 8 - Programming voltage (+3V or +5V)
 #define ISP_PIN_GND 4          // Pin 4 - Ground
 
-#endif
 
 // ============================================================================
 // BUILD TYPE DETECTION
@@ -202,13 +147,18 @@
 // SENSOR SYSTEM CONFIGURATION
 // ============================================================================
 
+// PWM-Based Microphone Sampling for PB3 (LED_3ER + Microphone sharing in DEBUG builds)
+// Samples microphone during natural LOW periods of LED_3ER's PWM cycle
+// This allows very frequent sampling (potentially hundreds of times per second) without visible LED impact
+#define MIC_SAMPLE_INTERVAL_MIN 1     // Sample every Nth PWM cycle during LOW periods (higher = less frequent sampling)
+
 // Breath Detection Thresholds
 // Lower values = more sensitive, higher values = less sensitive
 // Note: Baseline is now dynamically calibrated, only thresholds are static
 #define BREATH_LIGHT_THRESHOLD 1       // Light breath threshold for LED response
-#define BREATH_STRONG_THRESHOLD 50     // Strong breath threshold for audio trigger - more sensitive for reliable detection (50 for easy)
-#define BREATH_STRONG_MIN_DURATION 100 // Minimum duration (ms) strong threshold must be held to trigger audio - realistic with 10ms updates
-#define SONG_COOLDOWN_DURATION 3000    // Cooldown period (ms) after song ends - allows charge dissipation
+#define BREATH_STRONG_THRESHOLD 1     // Strong breath threshold for audio trigger (lower = more sensitive)
+#define BREATH_STRONG_MIN_DURATION 2   // Number of consecutive readings above strong threshold (very fast sampling = 1 is enough)
+#define SONG_COOLDOWN_DURATION 3000    // Cooldown period (ms) after song ends - prevents rapid re-triggering
 
 // LED Breath Response - Simple linear mapping for consistent behavior
 #define LED_BREATH_MIN_BOOST 40  // Minimum LED boost (0-255) for barely detectable breath
@@ -220,10 +170,10 @@
 
 // Candle Effect Base Brightness - Percentage values that scale with LED_BRIGHTNESS_DEFAULT
 // These percentages are multiplied by LED_BRIGHTNESS_DEFAULT to get actual brightness values
-#define CANDLE_TIP_BRIGHTNESS_PCT 80   // Tip LED brightness as % of LED_BRIGHTNESS_DEFAULT
-#define CANDLE_UPPER_BRIGHTNESS_PCT 250  // 60 in debug - Upper LED brightness as % of LED_BRIGHTNESS_DEFAULT
-#define CANDLE_MIDDLE_BRIGHTNESS_PCT 15 // Middle LED brightness as % of LED_BRIGHTNESS_DEFAULT
-#define CANDLE_BASE_BRIGHTNESS_PCT 10   // Base LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_TIP_BRIGHTNESS_PCT 100   // Tip LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_UPPER_BRIGHTNESS_PCT 60  // 60 in debug - Upper LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_MIDDLE_BRIGHTNESS_PCT 40 // Middle LED brightness as % of LED_BRIGHTNESS_DEFAULT
+#define CANDLE_BASE_BRIGHTNESS_PCT 20   // Base LED brightness as % of LED_BRIGHTNESS_DEFAULT
 
 // Audio-Reactive Light Effect Configuration
 // LED ring activation based on musical note ranges during song playback
@@ -249,7 +199,7 @@
 #define AUDIO_NOTE_LED_5ER_MAX NOTE_E4 // LED_5ER (base): E4 (330 Hz) and below - bass notes (E4)
 
 // Candle Flicker Configuration
-#define CANDLE_UPDATE_INTERVAL_MS 100 // Candle flicker update frequency in milliseconds (lower = faster flicker)
-#define CANDLE_FLICKER_SCALE 65       // Percentage of normal flicker intensity (25% = gentler for low brightness)
+#define CANDLE_UPDATE_INTERVAL_MS 150 // Candle flicker update frequency in milliseconds (lower = faster, more visible flicker)
+#define CANDLE_FLICKER_SCALE 70      // Percentage of normal flicker intensity (100% = full dramatic flicker for realistic candle effect)
 
 #endif // CONFIG_H_

@@ -32,6 +32,9 @@ typedef struct
     uint16_t breath_intensity;
     uint32_t strong_threshold_start_time;
     bool strong_threshold_active;
+    
+    // Consecutive strong breath detection
+    uint8_t strong_breath_count;  // Count of consecutive readings above strong threshold
 
     // Post-song cooldown to prevent immediate re-triggering
     uint32_t song_cooldown_end_time; // When cooldown period ends
@@ -55,7 +58,7 @@ bool sensors_init(void)
     g_sensors_state.baseline = 0; // Will be set by calibration
     g_sensors_state.light_threshold = BREATH_LIGHT_THRESHOLD;
     g_sensors_state.strong_threshold = BREATH_STRONG_THRESHOLD;
-    g_sensors_state.update_interval_ms = 40;
+    g_sensors_state.update_interval_ms = 10;  // Fast updates for responsive breath detection
     g_sensors_state.last_update_time = hardware_get_millis();
 
 #if FEATURE_AUDIO_OUTPUT
@@ -97,20 +100,33 @@ void sensors_update(void)
 
     if (raw_value > strong_threshold)
     {
-        // Strong breath - trigger song immediately (no duration check)
-        audio_play_next_melody();
+        // Strong breath detected - increment consecutive count
+        g_sensors_state.strong_breath_count++;
+        
+        // Trigger song only after required consecutive readings
+        if (g_sensors_state.strong_breath_count >= BREATH_STRONG_MIN_DURATION)
+        {
+            audio_play_next_melody();
+            g_sensors_state.strong_breath_count = 0;  // Reset count after triggering
+        }
         return;
-    }
-    else if (raw_value > breath_threshold)
-    {
-        // Light breath - candle effect
-        uint8_t boost = ((raw_value - breath_threshold) * 50) / g_sensors_state.light_threshold;
-        lighting_set_candle_intensity_boost(boost > 50 ? 50 : boost);
     }
     else
     {
-        // No breath - normal candle
-        lighting_set_candle_intensity_boost(0);
+        // Not above strong threshold - reset consecutive count
+        g_sensors_state.strong_breath_count = 0;
+        
+        if (raw_value > breath_threshold)
+        {
+            // Light breath - candle effect
+            uint8_t boost = ((raw_value - breath_threshold) * 50) / g_sensors_state.light_threshold;
+            lighting_set_candle_intensity_boost(boost > 50 ? 50 : boost);
+        }
+        else
+        {
+            // No breath - normal candle
+            lighting_set_candle_intensity_boost(0);
+        }
     }
 }
 
