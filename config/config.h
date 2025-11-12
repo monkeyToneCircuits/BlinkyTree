@@ -151,6 +151,7 @@
 // Samples microphone during natural LOW periods of LED_3ER's PWM cycle
 // This allows very frequent sampling (potentially hundreds of times per second) without visible LED impact
 #define MIC_SAMPLE_INTERVAL_MIN 1     // Sample every Nth PWM cycle during LOW periods (higher = less frequent sampling)
+#define SENSOR_UPDATE_INTERVAL_MS 5  // How often sensors_update() reads microphone (lower = more responsive, 1-50ms recommended)
 
 // Breath Detection Thresholds
 // Lower values = more sensitive, higher values = less sensitive

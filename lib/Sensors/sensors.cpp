@@ -58,7 +58,7 @@ bool sensors_init(void)
     g_sensors_state.baseline = 0; // Will be set by calibration
     g_sensors_state.light_threshold = BREATH_LIGHT_THRESHOLD;
     g_sensors_state.strong_threshold = BREATH_STRONG_THRESHOLD;
-    g_sensors_state.update_interval_ms = 10;  // Fast updates for responsive breath detection
+    g_sensors_state.update_interval_ms = SENSOR_UPDATE_INTERVAL_MS;  // Configurable update rate
     g_sensors_state.last_update_time = hardware_get_millis();
 
 #if FEATURE_AUDIO_OUTPUT
