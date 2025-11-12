@@ -28,6 +28,13 @@ extern "C"
 #define LIGHTING_DEFAULT_SPEED 100
 #define LIGHTING_UPDATE_INTERVAL_MS 50
 
+    // Startup Animation Configuration
+#define STARTUP_ANIMATION_DURATION_MS 1000  // Total duration of startup sequence
+#define STARTUP_STEP_DELAY_MS 150           // Delay between each LED ring lighting up
+#define STARTUP_FLASH_DURATION_MS 250       // Duration of final brightness flash
+#define STARTUP_DARK_PAUSE_MS 80           // Duration of dark pause after flash
+#define STARTUP_BUILDUP_BRIGHTNESS 85       // 1/3 of max brightness (255/3) for buildup phase
+
     // ============================================================================
     // LIGHTING EFFECTS
     // ============================================================================
@@ -78,6 +85,7 @@ extern "C"
     // System initialization and control
     bool lighting_init(void);
     void lighting_update(void);
+    void lighting_startup_animation(void);  // Blocking startup animation
 
     // Effect control
     void lighting_set_effect(lighting_effect_t effect);

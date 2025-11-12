@@ -38,6 +38,9 @@ int main(void)
     audio_init();
 #endif
 
+    // Visual startup animation (blocking, ~1 second)
+    lighting_startup_animation();
+
     // Play startup melody using current song in rotation
 #if PLAY_STARTUP_MELODY
     audio_play_next_melody();

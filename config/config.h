@@ -135,6 +135,7 @@
 
 // Startup Configuration
 #define PLAY_STARTUP_MELODY 0 // Play current rotation song at startup (1=enabled, 0=disabled)
+#define ENABLE_STARTUP_ANIMATION 1 // Visual startup animation - bottom to top LED sequence (1=enabled, 0=disabled)
 
 // ============================================================================
 // PERSISTENT STORAGE CONFIGURATION

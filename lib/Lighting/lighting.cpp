@@ -72,6 +72,54 @@ bool lighting_init(void)
     return true;
 }
 
+// Helper function for non-blocking delay with PWM updates
+static void startup_delay_ms(uint16_t ms)
+{
+    uint32_t start = hardware_get_millis();
+    while ((hardware_get_millis() - start) < ms)
+    {
+        hardware_update();  // Keep PWM running during delay
+        _delay_us(10);      // Small delay to prevent excessive CPU usage
+    }
+}
+
+void lighting_startup_animation(void)
+{
+#if ENABLE_STARTUP_ANIMATION
+    // Bottom to top LED build-up sequence with final flash
+    // Total duration: ~1000ms
+    
+    uint8_t buildup_brightness = STARTUP_BUILDUP_BRIGHTNESS;  // 1/3 brightness
+    
+    // Turn off all LEDs first
+    hardware_led_all_off();
+    startup_delay_ms(50);
+    
+    // Step 1: Bottom ring (LED_5ER) - 150ms
+    hardware_led_set(LED_5ER_RING, buildup_brightness);
+    startup_delay_ms(STARTUP_STEP_DELAY_MS);
+    
+    // Step 2: Middle ring (LED_4ER) - 300ms total
+    hardware_led_set(LED_4ER_RING, buildup_brightness);
+    startup_delay_ms(STARTUP_STEP_DELAY_MS);
+    
+    // Step 3: Upper ring (LED_3ER) - 450ms total
+    hardware_led_set(LED_3ER_RING, buildup_brightness);
+    startup_delay_ms(STARTUP_STEP_DELAY_MS);
+    
+    // Step 4: Top LED (LED_1ER) - 600ms total
+    hardware_led_set(LED_1ER_RING, buildup_brightness);
+    startup_delay_ms(STARTUP_STEP_DELAY_MS);
+    
+    // Step 5: Turn off all LEDs for dramatic pause
+    hardware_led_all_off();
+    startup_delay_ms(STARTUP_DARK_PAUSE_MS);
+    
+    // Animation complete - LEDs will be controlled by normal effects
+    // Total time: ~1300ms
+#endif
+}
+
 void lighting_update(void)
 {
 #if FEATURE_AUDIO_OUTPUT && AUDIO_REACTIVE_ENABLE
