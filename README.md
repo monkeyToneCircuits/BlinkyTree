@@ -3,8 +3,7 @@
 An interactive ATtiny85-powered Christmas tree with LED effects and breath-controlled interaction.
 
 <p align="center">
-  <img src="images/blinkytree_lit.png" width="45%" alt="BlinkyTree in Action" />
-  <img src="images/blinkytree_off.png" width="45%" alt="BlinkyTree Off" />
+  <img src="images/BlinkyTree_Front.jpg" width="70%" alt="BlinkyTree in Action" />
 </p>
 
 **Copyright (c) 2025 monkeyToneCircuits**  
