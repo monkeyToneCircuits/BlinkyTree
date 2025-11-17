@@ -31,49 +31,49 @@ project:
 songs:
   # Traditional German Christmas carol
   Oh_Tannenbaum:
-    enabled: false
+    enabled: true
     duty_cycle: 75
     speed: 150
     transpose: 9
     
   # Classic Christmas lullaby
   Stille_Nacht_ChipVersion:
-    enabled: false
+    enabled: true
     duty_cycle: 75
     speed: 150
     transpose: 8
     
   # Upbeat Christmas favorite
   JINGLE_BELLS:
-    enabled: false
+    enabled: true
     duty_cycle: 85
     speed: 180
     transpose: 6
     
   # Traditional Christmas carol
   The_First_Noel_Trumpet_only:
-    enabled: false
+    enabled: true
     duty_cycle: 80
     speed: 140
     transpose: 8
     
   # German Christmas song "Kling, Glöckchen"
   Oh_du_frohliche:
-    enabled: false
+    enabled: true
     duty_cycle: 85
     speed: 170
     transpose: 8
     
   # German Christmas carol "Kommet, ihr Hirten"
   kommet-ihr-hirten:
-    enabled: false
+    enabled: true
     duty_cycle: 80
     speed: 160
     transpose: 4
     
   # German children's Christmas song
   Schneeflockchen_Weissrockchen:
-    enabled: false
+    enabled: true
     duty_cycle: 75
     speed: 140
     transpose: 7
