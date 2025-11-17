@@ -1,0 +1,144 @@
+# BlinkyTree Configuration
+# ATtiny85 Interactive Christmas Tree
+#
+# Copyright (c) 2025 monkeyToneCircuits
+# Licensed under CC-BY-NC 4.0
+# https://creativecommons.org/licenses/by-nc/4.0/
+#
+# This configuration file controls which songs are enabled and their playback settings.
+# After editing, commit changes and push to GitHub. The GitHub Action will automatically
+# compile a new firmware hex file with your custom song selection.
+
+# ============================================================================
+# PROJECT INFORMATION
+# ============================================================================
+project:
+  name: "BlinkyTree"
+  version: "2.0.0"
+  author: "Dschi"
+
+# ============================================================================
+# SONG CONFIGURATION
+# ============================================================================
+# Each song can be configured with three parameters:
+#   duty_cycle: PWM duty cycle percentage (10-100%) - affects tone quality/volume
+#   speed: Playback speed percentage (25-200%) - 100% = original tempo
+#   transpose: Semitones to shift pitch (-12 to +12) - 0 = original key
+#
+# Songs are loaded from MusicXML files in the songs/ folder.
+# The song key matches the MusicXML filename (without .musicxml extension).
+
+songs:
+  # Traditional German Christmas carol
+  Oh_Tannenbaum:
+    enabled: false
+    duty_cycle: 75
+    speed: 150
+    transpose: 9
+    
+  # Classic Christmas lullaby
+  Stille_Nacht_ChipVersion:
+    enabled: false
+    duty_cycle: 75
+    speed: 150
+    transpose: 8
+    
+  # Upbeat Christmas favorite
+  JINGLE_BELLS:
+    enabled: false
+    duty_cycle: 85
+    speed: 180
+    transpose: 6
+    
+  # Traditional Christmas carol
+  The_First_Noel_Trumpet_only:
+    enabled: false
+    duty_cycle: 80
+    speed: 140
+    transpose: 8
+    
+  # German Christmas song "Kling, Glöckchen"
+  Oh_du_frohliche:
+    enabled: false
+    duty_cycle: 85
+    speed: 170
+    transpose: 8
+    
+  # German Christmas carol "Kommet, ihr Hirten"
+  kommet-ihr-hirten:
+    enabled: false
+    duty_cycle: 80
+    speed: 160
+    transpose: 4
+    
+  # German children's Christmas song
+  Schneeflockchen_Weissrockchen:
+    enabled: false
+    duty_cycle: 75
+    speed: 140
+    transpose: 7
+
+
+# ============================================================================
+# FEATURE CONFIGURATION
+# ============================================================================
+features:
+  # Lighting effect (only one can be active)
+  candle_effect: true
+  breathing_effect: false
+  candle_effect_kranz: false
+  
+  # Sensor support
+  microphone_sensor: true
+  
+  # Audio system
+  audio_output: true
+  
+  # Advanced features
+  eeprom_settings: true
+  memory_optimization: true
+  song_rotation: true
+
+# ============================================================================
+# LED FREQUENCY MAPPING
+# ============================================================================
+# Maps note frequencies to LED rings for audio-reactive lighting
+# Frequencies are in Hz
+led_mapping:
+  LED_5ER:  # Lowest notes
+    max_frequency: 216  # Up to E4
+    
+  LED_4ER:  # Low-mid notes
+    min_frequency: 229  # F4
+    max_frequency: 273  # GS4
+    
+  LED_3ER:  # Mid-high notes
+    min_frequency: 290  # A4
+    max_frequency: 326  # B4
+    
+  LED_1ER:  # Highest notes
+    min_frequency: 344  # C5 and above
+
+# ============================================================================
+# HARDWARE SETTINGS
+# ============================================================================
+hardware:
+  led_brightness_default: 30
+  audio_max_frequency: 4000
+  audio_min_frequency: 100
+  audio_default_volume: 128
+
+# ============================================================================
+# ADVANCED CONFIGURATION
+# ============================================================================
+# Note: Most users won't need to modify these settings
+
+# Time multiplexing for shared microphone/LED pin
+timing:
+  mic_read_interval_ms: 50
+  led_update_interval_ms: 20
+
+# Memory constraints (ATtiny85 has only 512 bytes RAM)
+memory:
+  max_melody_notes: 100  # Maximum notes per song
+  stack_reserve: 128     # Reserved stack space
