@@ -17,7 +17,7 @@
 // PROJECT INFORMATION
 // ============================================================================
 #define PROJECT_NAME "BlinkyTree"
-#define PROJECT_VERSION "1.0.0" // First production release
+#define PROJECT_VERSION "1.0.0" // First public release
 #define PROJECT_AUTHOR "Dschi"
 
 // ============================================================================
@@ -61,10 +61,10 @@
 
 // Debug Pin Assignments - Reset pin reserved for ISP
 #define PIN_RESET PB5          // Pin 1 - Reset/Programming (always functional)
-#define PIN_LED_1ER PB0        // Pin 7 - LED Ring 1 (software PWM)
+#define PIN_LED_1ER PB0        // Pin 5 - LED Ring 1 (hardware PWM) [ISP: MOSI]
 #define PIN_LED_3ER PB3        // Pin 2 - LED Ring 3 (SHARED with microphone - time-multiplexed)
-#define PIN_LED_4ER PB2        // Pin 5 - LED Ring 4 (hardware PWM)
-#define PIN_LED_5ER PB1        // Pin 6 - LED Ring 5 (hardware PWM)
+#define PIN_LED_4ER PB2        // Pin 7 - LED Ring 4 (software PWM) [ISP: SCK]
+#define PIN_LED_5ER PB1        // Pin 6 - LED Ring 5 (hardware PWM) [ISP: MISO]
 #define PIN_MIC_INPUT PB3      // Pin 2 - Microphone ADC input (shared with LED_3ER)
 #define BUZZER_PIN PB4         // Pin 3 - Buzzer (dedicated, no sharing)
 
@@ -73,9 +73,9 @@
 
 // ISP Programming Pin Assignments (6-pin connector) - DEBUG ONLY
 #define ISP_PIN_RESET PB5      // Pin 1 - Reset (shared with PIN_RESET)
-#define ISP_PIN_SCK PB2        // Pin 7 - Serial Clock (shared with PIN_LED_1ER)
+#define ISP_PIN_SCK PB2        // Pin 7 - Serial Clock (shared with PIN_LED_4ER)
 #define ISP_PIN_MISO PB1       // Pin 6 - Master In Slave Out (shared with PIN_LED_5ER)
-#define ISP_PIN_MOSI PB0       // Pin 5 - Master Out Slave In (shared with PIN_LED_4ER)
+#define ISP_PIN_MOSI PB0       // Pin 5 - Master Out Slave In (shared with PIN_LED_1ER)
 #define ISP_PIN_VCC 8          // Pin 8 - Programming voltage (+3V or +5V)
 #define ISP_PIN_GND 4          // Pin 4 - Ground
 
