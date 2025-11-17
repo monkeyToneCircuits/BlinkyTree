@@ -8,6 +8,10 @@ An interactive ATtiny85-powered Christmas tree with LED candle effects and breat
 
 **Get your kit at [BlinkyParts.com](https://shop.blinkyparts.com/de/BlinkyTree-Interaktiver-Weihnachtsbaum-Loetbausatz/blink23179)!**
 
+## Demo
+
+🎥 **[Watch the demo video](media/BlinkyTree_ShowRun.mp4)** - Shows candle effect, breath detection, and melody playback with LED visualization
+
 ## Features
 
 - 🕯️ **Realistic Candle Effect** - Four LED rings flicker independently
