@@ -118,23 +118,23 @@
 // Enable/disable individual songs to save Flash memory
 // Set to 0 to disable songs and save Flash memory
 
-// Christmas Songs
-#define ENABLE_OH_CHRISTMAS_TREE 1 // Classic German Christmas carol
-#define ENABLE_SILENT_NIGHT 1      // Traditional Christmas favorite
-#define ENABLE_JINGLE_BELLS 1      // Fun Christmas tune
-#define ENABLE_NOEL 1              // Christmas carol "The First Noel"
-#define ENABLE_GLING_KLOECKCHEN 1  // German Christmas song "Kling, Glöckchen"
+// Christmas Songs - Traditional/Public Domain
+#define ENABLE_OH_CHRISTMAS_TREE 1 // Classic German Christmas carol (public domain)
+#define ENABLE_SILENT_NIGHT 1      // Traditional Christmas favorite (public domain)
+#define ENABLE_JINGLE_BELLS 1      // Fun Christmas tune (public domain)
+#define ENABLE_NOEL 1              // Christmas carol "The First Noel" (public domain)
+#define ENABLE_GLING_KLOECKCHEN 1  // German Christmas song "Kling, Glöckchen" (public domain)
+#define ENABLE_KOMMET_IHR_HIRTEN 1 // German Christmas carol "Kommet, ihr Hirten" (public domain)
+#define ENABLE_SCHNEEFLOECKCHEN 1  // German Christmas song "Schneeflöckchen, Weißröckchen" (public domain)
 
-// Theme Songs
-#define ENABLE_ZELDA_THEME 1    // Legend of Zelda main theme
-#define ENABLE_IMPERIAL_MARCH 1 // Star Wars Imperial March (Darth Vader)
+#define ENABLE_TEST_TONE 0         // Single 5-second test tone for frequency calibration
 
 // Song Rotation Configuration
 #define ENABLE_SONG_ROTATION 1      // Enable automatic song rotation through enabled songs
 #define SONG_ROTATION_MODE 1        // 0=random selection, 1=sequential order
 
 // Startup Configuration
-#define PLAY_STARTUP_MELODY 0 // Play current rotation song at startup (1=enabled, 0=disabled)
+#define PLAY_STARTUP_MELODY 1 // Play current rotation song at startup (1=enabled, 0=disabled)
 #define ENABLE_STARTUP_ANIMATION 1 // Visual startup animation - bottom to top LED sequence (1=enabled, 0=disabled)
 
 // ============================================================================
@@ -189,16 +189,16 @@
 // 4-LED MAPPING (optimized for Silent Night coverage):
 // LED_3ER used during songs (microphone inactive during audio output)
 // LED_1ER (Top/Tip):    Highest notes C5 and above (C5, D5+)
-// LED_3ER (Upper):      High-mid notes A4 to B4 (A4, B4)
-// LED_4ER (Middle):     Mid notes F4 to G4 (G4)
-// LED_5ER (Base/Bottom): Low notes E4 and below (E4)
+// LED_3ER (Upper):      High-mid notes GS4 to B4 (GS4, A4, AS4, B4)
+// LED_4ER (Middle):     Mid notes F4 to G4 (F4, FS4, G4)
+// LED_5ER (Base/Bottom): Low notes E4 and below (E4 and lower)
 //
-#define AUDIO_NOTE_LED_1ER_MIN NOTE_C5 // LED_1ER (tip): C5 (523 Hz) and above - highest notes (C5, D5+)
-#define AUDIO_NOTE_LED_3ER_MIN NOTE_A4 // LED_3ER (upper): A4 (440 Hz) to B4 (494 Hz) - high-mid notes (A4, B4)
+#define AUDIO_NOTE_LED_1ER_MIN NOTE_C5  // LED_1ER (tip): C5 (344 Hz) and above - highest notes (C5, D5+)
+#define AUDIO_NOTE_LED_3ER_MIN NOTE_GS4 // LED_3ER (upper): GS4 (273 Hz) to B4 (326 Hz) - high-mid notes (GS4, A4, AS4, B4)
 #define AUDIO_NOTE_LED_3ER_MAX NOTE_B4
-#define AUDIO_NOTE_LED_4ER_MIN NOTE_F4 // LED_4ER (middle): F4 (349 Hz) to G4 (392 Hz) - mid notes (G4)
+#define AUDIO_NOTE_LED_4ER_MIN NOTE_F4  // LED_4ER (middle): F4 (229 Hz) to G4 (257 Hz) - mid notes (F4, FS4, G4)
 #define AUDIO_NOTE_LED_4ER_MAX NOTE_G4
-#define AUDIO_NOTE_LED_5ER_MAX NOTE_E4 // LED_5ER (base): E4 (330 Hz) and below - bass notes (E4)
+#define AUDIO_NOTE_LED_5ER_MAX NOTE_E4  // LED_5ER (base): E4 (216 Hz) and below - bass notes (E4 and lower)
 
 // Candle Flicker Configuration
 #define CANDLE_UPDATE_INTERVAL_MS 150 // Candle flicker update frequency in milliseconds (lower = faster, more visible flicker)
