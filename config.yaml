@@ -38,7 +38,7 @@ songs:
     
   # Classic Christmas lullaby
   Stille_Nacht_ChipVersion:
-    enabled: true
+    enabled: false
     duty_cycle: 75
     speed: 150
     transpose: 8
