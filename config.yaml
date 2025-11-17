@@ -31,21 +31,21 @@ project:
 songs:
   # Traditional German Christmas carol
   Oh_Tannenbaum:
-    enabled: false
+    enabled: true
     duty_cycle: 75
     speed: 150
     transpose: 9
     
   # Classic Christmas lullaby
   Stille_Nacht_ChipVersion:
-    enabled: false
+    enabled: true
     duty_cycle: 75
     speed: 150
     transpose: 8
     
   # Upbeat Christmas favorite
   JINGLE_BELLS:
-    enabled: false
+    enabled: true
     duty_cycle: 85
     speed: 180
     transpose: 6
