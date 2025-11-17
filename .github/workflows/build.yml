@@ -71,6 +71,8 @@ jobs:
         path: |
           .pio/build/attiny85_avrispv2/firmware.hex
           .pio/build/attiny85_avrispv2/firmware.elf
+          flash_firmware.bat
+          FLASHING_GUIDE.md
         retention-days: 90
         
     - name: Create release on tag
