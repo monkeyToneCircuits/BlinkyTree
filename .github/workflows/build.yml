@@ -55,10 +55,10 @@ jobs:
         echo "Firmware build complete!"
         echo "firmware_path=.pio/build/attiny85_avrispv2/firmware.hex" >> $GITHUB_OUTPUT
         
-        # Get memory usage
+        # Get memory usage using pio
         if [ -f .pio/build/attiny85_avrispv2/firmware.elf ]; then
           echo "=== Memory Usage ===" >> $GITHUB_STEP_SUMMARY
-          avr-size .pio/build/attiny85_avrispv2/firmware.elf >> $GITHUB_STEP_SUMMARY
+          pio run -e attiny85_avrispv2 -t size >> $GITHUB_STEP_SUMMARY
         fi
         
         # Get timestamp
