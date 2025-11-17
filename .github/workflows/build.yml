@@ -2,15 +2,14 @@ name: Build BlinkyTree Firmware
 
 on:
   push:
-    branches: [ main ]
     paths:
       - 'config.yaml'
       - 'songs/**'
       - 'src/**'
       - 'lib/**'
       - 'platformio.ini'
+      - '.github/workflows/build.yml'
   pull_request:
-    branches: [ main ]
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
