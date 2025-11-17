@@ -287,8 +287,8 @@ static const audio_note_t PROGMEM melody_schneeflockchen_weissrockchen[] = {
     {257, 1000},
 };
 
-// Song: let-it-go-disneys-frozen (75 notes)
-static const audio_note_t PROGMEM melody_let_it_go_disneys_frozen[] = {
+// Song: PRIVATE_let-it-go-disneys-frozen (75 notes)
+static const audio_note_t PROGMEM melody_private_let_it_go_disneys_frozen[] = {
     {515, 125},
     {546, 125},
     {344, 125},
@@ -385,7 +385,7 @@ static const song_config_t song_configs[] = {
     [MELODY_OH_DU_FROHLICHE] = {85, 170, 8},  // Oh_du_frohliche
     [MELODY_KOMMET_IHR_HIRTEN] = {80, 160, 4},  // kommet-ihr-hirten
     [MELODY_SCHNEEFLOCKCHEN_WEISSROCKCHEN] = {75, 140, 7},  // Schneeflockchen_Weissrockchen
-    [MELODY_LET_IT_GO_DISNEYS_FROZEN] = {75, 90, 4},  // let-it-go-disneys-frozen
+    [MELODY_PRIVATE_LET_IT_GO_DISNEYS_FROZEN] = {75, 90, 4},  // PRIVATE_let-it-go-disneys-frozen
     [MELODY_TEST_TONE] = {80, 100, 0},  // Test tone
 };
 
@@ -395,7 +395,7 @@ static const song_config_t song_configs[] = {
 
 #if ENABLE_SONG_ROTATION
 const melody_id_t enabled_songs[] = {
-    MELODY_LET_IT_GO_DISNEYS_FROZEN,
+    MELODY_PRIVATE_LET_IT_GO_DISNEYS_FROZEN,
 };
 const uint8_t ENABLED_SONG_COUNT = 1;
 #endif
@@ -435,9 +435,9 @@ const audio_note_t *get_melody_data(melody_id_t melody_id, uint8_t *note_count)
         *note_count = sizeof(melody_schneeflockchen_weissrockchen) / sizeof(audio_note_t);
         return melody_schneeflockchen_weissrockchen;
 
-    case MELODY_LET_IT_GO_DISNEYS_FROZEN:
-        *note_count = sizeof(melody_let_it_go_disneys_frozen) / sizeof(audio_note_t);
-        return melody_let_it_go_disneys_frozen;
+    case MELODY_PRIVATE_LET_IT_GO_DISNEYS_FROZEN:
+        *note_count = sizeof(melody_private_let_it_go_disneys_frozen) / sizeof(audio_note_t);
+        return melody_private_let_it_go_disneys_frozen;
 
     case MELODY_TEST_TONE:
         *note_count = sizeof(melody_test_tone) / sizeof(audio_note_t);

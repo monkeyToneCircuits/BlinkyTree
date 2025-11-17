@@ -1,407 +1,219 @@
 # BlinkyTree
 
-An interactive ATtiny85-powered Christmas tree with LED effects and breath-controlled interaction.
+An interactive ATtiny85-powered Christmas tree with LED candle effects and breath-controlled music playback.
 
 <p align="center">
   <img src="media/BlinkyTree_Front.jpg" width="70%" alt="BlinkyTree in Action" />
 </p>
 
-**Copyright (c) 2025 monkeyToneCircuits**  
-**Licensed under CC-BY-NC 4.0** - See [LICENSE](LICENSE) file for details.
-
-## Demo Video
-
-<video src="media/BlinkyTree_ShowRun.mp4" width="400" controls></video>
-
-*Video shows the candle effect, breath detection, and melody playback with LED frequency visualization.*
-
-## Overview
-
-BlinkyTree is my small project I invented a few years back that finally made it into the world! :)
-
-It's an interactive Christmas tree that flickers in a candle-like manner. When you blow onto the microphone, the tree kicks off one of its songs, playing it on the buzzer. The LED rings blink in correspondence to the frequency of the notes in the songs.
-
-Have fun with it, and if you want to build your own, you can get yours at [BlinkyParts.com](https://shop.blinkyparts.com/de/BlinkyTree-Interaktiver-Weihnachtsbaum-Loetbausatz/blink23179)!
-
-It's built around the ATtiny85 microcontroller.
-
-## 🎵 Customize Your Songs!
-
-**New in v2.0:** You can now customize which songs play on your BlinkyTree without recompiling locally!
-
-1. **Fork this repository** on GitHub
-2. **Edit `config.yaml`** to:
-   - Enable/disable songs
-   - Adjust playback settings (speed, pitch, duty cycle)
-3. **Add your own songs** by placing MusicXML files in the `songs/` folder
-4. **Push your changes** - GitHub Actions automatically builds your custom firmware
-5. **Download the `.hex` file** from the Actions artifacts and flash to your ATtiny85!
-
-See the [Adding Custom Songs](#adding-custom-songs) section for detailed instructions.
+**Get your kit at [BlinkyParts.com](https://shop.blinkyparts.com/de/BlinkyTree-Interaktiver-Weihnachtsbaum-Loetbausatz/blink23179)!**
 
 ## Features
 
-- **Realistic Candle Effect**: Four LED rings flicker independently like real candles
-- **Breath Detection**: Microphone sensor detects blowing
-  - Light breath → Increased candle flickering intensity
-  - Strong breath → Plays a Christmas melody
-- **Audio Playback**: Built-in buzzer plays festive songs (Jingle Bells, Silent Night, etc.)
-- **Modular Design**: Feature-configurable firmware for different hardware variants
-- **Low Power**: Optimized for battery operation (60% Flash, 29% RAM usage)
+- 🕯️ **Realistic Candle Effect** - Four LED rings flicker independently
+- 🎤 **Breath Detection** - Blow to trigger songs or increase flicker intensity  
+- 🎵 **Music Playback** - Built-in buzzer plays Christmas melodies
+- 🎨 **LED Light Show** - LEDs react to note frequencies
+- ⚙️ **Fully Customizable** - Add your own songs via GitHub Actions (no coding required!)
 
-## Project Structure
+## 🎵 Customize Your Songs (No Setup Required!)
 
-```
-BlinkyTree/
-├── src/
-│   └── main.cpp                   # Main application loop
-├── lib/
-│   ├── Hardware/                  # Hardware abstraction (GPIO, PWM, ADC, timing)
-│   ├── Lighting/                  # LED effects and candle simulation
-│   ├── Audio/                     # Melody playback and tone generation
-│   │   ├── audio.h/cpp            # Core audio system
-│   │   └── audio_songs_generated.* # Auto-generated from MusicXML (do not edit)
-│   └── Sensors/                   # Microphone sensor processing
-├── songs/                         # MusicXML song files
-│   ├── JINGLE_BELLS.musicxml
-│   ├── Stille_Nacht_ChipVersion.musicxml
-│   └── ...
-├── scripts/
-│   ├── generate_audio_code.py    # MusicXML → C code converter
-│   └── pre_build.py               # PlatformIO pre-build script
-├── config/
-│   └── config.h                   # Low-level hardware configuration
-├── config.yaml                    # Song configuration (edit this!)
-├── platformio.ini                 # Build configuration
-└── README.md
+Customize songs directly on GitHub - no local development environment needed!
+
+1. **Fork this repository** on GitHub
+2. **Edit `config.yaml`** to enable/disable songs and adjust settings
+3. **Add MusicXML files** to the `songs/` folder (export from MuseScore, Finale, etc.)
+4. **Push changes** - GitHub Actions automatically builds your firmware
+5. **Download the `.hex` file** from Actions → Artifacts
+6. **Flash to your BlinkyTree** - See [FLASHING_GUIDE.md](FLASHING_GUIDE.md)
+
+### Song Configuration
+
+Edit `config.yaml` to customize each song:
+
+```yaml
+songs:
+  JINGLE_BELLS:
+    enabled: true
+    duty_cycle: 80      # Volume (10-100)
+    speed: 150          # Tempo (25-200, 100=original)
+    transpose: 0        # Pitch shift (-12 to +12 semitones)
 ```
 
-**New in v2.0:** Songs are now defined in `config.yaml` and `songs/*.musicxml` files, automatically converted to C code during build.
+### Adding New Songs
 
-## Hardware Requirements
-The set containing all components and pcbs can be bought here:
-[BlinkyParts.com](https://www.blinkyparts.com)
+1. Export your melody as MusicXML (MuseScore: File → Export → MusicXML)
+2. Upload the `.musicxml` file to the `songs/` folder
+3. Add an entry in `config.yaml` with the same filename (without extension)
+4. Commit and push - GitHub Actions builds your custom firmware!
 
-### Components
-- ATtiny85 microcontroller (8MHz internal oscillator)
-- 4 LED rings (1, 3, 4, 5 LEDs respectively)
-- Electret microphone with peak detector circuit
-- Piezo buzzer or small speaker
-- ISP programmer (USBasp, Arduino as ISP, etc.)
-- Power supply: 3-5V DC (battery or USB)
+**Requirements:** Single melody line, note range G3-B5, standard durations
 
-### ATtiny85 Pinout
+## Hardware
 
+**ATtiny85 Pinout:**
 ```
       ┌─────────────┐
- RESET│1  •      8 │ VCC (+3V to +5V)
+ RESET│1  •      8 │ VCC (+3-5V)
   MIC │2         7 │ LED_1ER
 BUZZER│3         6 │ LED_5ER (PWM)
   GND │4         5 │ LED_4ER (PWM)
       └─────────────┘
+
+Pin Mapping:
+Pin 1: PB5 (RESET) - ISP Programming
+Pin 2: PB3 (MIC/LED_3ER) - Shared/Time-multiplexed
+Pin 3: PB4 (BUZZER)
+Pin 5: PB0 (LED_4ER) - Hardware PWM
+Pin 6: PB1 (LED_5ER) - Hardware PWM  
+Pin 7: PB2 (LED_1ER) - Software PWM
 ```
 
+**Components:**
+- ATtiny85 microcontroller (8MHz internal)
+- 4 LED rings (1, 3, 4, 5 LEDs)
+- Electret microphone with peak detector
+- Piezo buzzer
+- Power: 3-5V (battery or USB)
 
-## Software Setup
+## Quick Start
 
-### Prerequisites
+### Option 1: Flash Pre-Built Firmware
 
-1. **Install PlatformIO**
-   - Open VS Code
-   - Install the "PlatformIO IDE" extension
-   - Restart VS Code
+1. Download the latest firmware from [Releases](../../releases)
+2. Follow the [FLASHING_GUIDE.md](FLASHING_GUIDE.md)
+3. Use the included `flash_firmware.bat` (Windows) or `flash_firmware.sh` (Linux/macOS)
 
-2. **Install AVR Toolchain** (automatic via PlatformIO)
-   - The toolchain installs automatically when you first build
+### Option 2: Build Locally
 
-### Using Command Line
+**Prerequisites:**
+- PlatformIO Core or VS Code with PlatformIO extension
+- Python 3.11+ with PyYAML (`pip install pyyaml`)
+
+**Build and Upload:**
+```bash
+pio run                    # Build firmware
+pio run --target upload    # Upload to ATtiny85 (requires ISP programmer)
+```
+
+## Flashing
+
+### Quick Flash
+
+**Windows:** Double-click `flash_firmware.bat`  
+**Linux/macOS:** Run `./flash_firmware.sh`
+
+The scripts auto-detect your ISP programmer and flash automatically.
+
+### Manual Flash
 
 ```bash
-# Build firmware
-pio run
-
-# Upload to ATtiny85 (requires ISP programmer)
-pio run --target upload
-
-```
-
-### Flashing from GitHub Actions Artifacts
-
-If you've customized your firmware using GitHub Actions, you'll receive a `.hex` file. Here's how to flash it:
-
-#### Prerequisites
-- **ISP Programmer**: USBasp, Atmel ICE, Arduino as ISP, or similar
-- **avrdude**: Command-line tool for AVR programming
-  - Windows: Download from [AVR Downloads](https://github.com/avrdudes/avrdude/releases)
-  - Linux: `sudo apt-get install avrdude`
-  - macOS: `brew install avrdude`
-
-#### Step 1: Connect ISP Programmer
-
-Connect your ISP programmer to the 6-pin ISP header on the BlinkyTree PCB:
-
-```
-ISP Header Pinout:
-┌─────────────┐
-│ MISO    VCC │ 1 2
-│ SCK     MOSI│ 3 4
-│ RESET   GND │ 5 6
-└─────────────┘
-```
-
-**Pin Mapping to ATtiny85:**
-- **MISO** → PB1 (Pin 6)
-- **MOSI** → PB0 (Pin 5)
-- **SCK** → PB2 (Pin 7)
-- **RESET** → RESET (Pin 1)
-- **VCC** → Power (3-5V)
-- **GND** → Ground
-
-#### Step 2: Flash the Hex File
-
-**Using avrdude (Universal Method):**
-
-```bash
-# For USBasp programmer:
+# USBasp
 avrdude -c usbasp -p attiny85 -U flash:w:firmware.hex:i
 
-# For Arduino as ISP:
-avrdude -c avrisp -P COM6 -b 19200 -p attiny85 -U flash:w:firmware.hex:i
-
-# For Atmel ICE:
-avrdude -c atmelice_isp -p attiny85 -U flash:w:firmware.hex:i
-
-# Verify after flashing:
-avrdude -c usbasp -p attiny85 -U flash:v:firmware.hex:i
+# AVRISPv2  
+avrdude -c avrisp2 -P usb -p attiny85 -U flash:w:firmware.hex:i
 ```
 
-**Using PlatformIO (if you have the project):**
+**Need help?** See the complete [FLASHING_GUIDE.md](FLASHING_GUIDE.md) for:
+- ISP programmer setup and connections
+- Driver installation (Windows)
+- Fuse configuration
+- Detailed troubleshooting
 
-1. Place your custom `.hex` file in `.pio/build/attiny85_debug/`
-2. Rename it to `firmware.hex`
-3. Run: `pio run --target upload`
-
-#### Step 3: Set Fuses (One-Time Setup)
-
-**Note:** If you purchased your BlinkyTree from [BlinkyParts.com](https://shop.blinkyparts.com/de/BlinkyTree-Interaktiver-Weihnachtsbaum-Loetbausatz/blink23179), the fuses are already configured correctly and you can skip this step.
-
-For new or blank ATtiny85 chips, you need to set the fuses correctly:
-
-```bash
-avrdude -c usbasp -p attiny85 -U lfuse:w:0xE2:m -U hfuse:w:0xDF:m -U efuse:w:0xFF:m
-```
-
-**Fuse Settings Explained:**
-- **lfuse = 0xE2**: 8MHz internal oscillator, no clock division
-- **hfuse = 0xDF**: RESET enabled, brown-out detection at 1.8V
-- **efuse = 0xFF**: Self-programming disabled
-
-#### Troubleshooting Flash Process
-
-**"Device not found" or "Initialization failed":**
-- Check all 6 ISP connections (especially GND and VCC)
-- Verify programmer is recognized by your computer (`lsusb` on Linux)
-- Ensure target has power (measure 3-5V on VCC pin)
-- Try slower programming speed: `avrdude -c usbasp -B 10 -p attiny85 ...`
-
-**"Verification error":**
-- Poor connection quality - check jumper wires
-- Interference from other circuits - disconnect buzzer/LEDs during programming
-- Flash corruption - re-download hex file
-
-**USBasp driver issues (Windows):**
-- Install Zadig driver: [zadig.akeo.ie](https://zadig.akeo.ie/)
-- Select USBasp device, install WinUSB or libusb-win32 driver
-
-### ISP Programmer Connection
-At the bottom of the PCB there is a connector prepared for a standard ISP programming adapter with 6 pins. 
-
-
-## Behavior
+## How It Works
 
 ### Startup
-
-1. System initializes hardware (LEDs, microphone, buzzer)
-2. Microphone calibrates baseline noise level
+1. Hardware initialization (LEDs, microphone, buzzer)
+2. Microphone calibration
 3. Candle effect starts automatically
-4. Optional startup melody plays (configurable)
 
-### Normal Operation
+### Operation
 
-**Ambient Mode:**
-- All four LED rings flicker independently with candle-like randomness
-- Soft, warm ambiance
+**Idle:** Four LED rings flicker independently with realistic candle simulation
 
-**Light Breath Detected:**
-- Candle flicker intensity increases (0-50% boost)
-- Proportional to breath strength
-- Smooth transitions
+**Light Breath:** Candle flicker intensity increases proportionally
 
-**Strong Breath Detected:**
-- Triggers Christmas melody playback
-- One of seven songs plays (rotates through list)
-- Cooldown period prevents immediate re-triggering
-
-### Available Melodies
-
-- Oh Christmas Tree
-- Silent Night
-- Jingle Bells
-- Zelda Theme
-- The First Noel
-- Imperial March
-- Kling Glöckchen
+**Strong Breath:** Triggers a random song from your enabled playlist
 
 ## Configuration
 
-### Feature Flags (`config/config.h`)
+### Hardware Features (`config/config.h`)
 
 ```c
-// Lighting Effects (choose ONE)
 #define FEATURE_CANDLE_EFFECT 1        // Realistic candle flickering
-#define FEATURE_BREATHING_EFFECT 0     // Smooth breathing animation
-#define FEATURE_CANDLE_EFFECT_KRANZ 0  // Alternative candle mode
-
-// Sensors and Audio
-#define FEATURE_MICROPHONE_SENSOR 1    // Enable breath detection
-#define FEATURE_AUDIO_OUTPUT 1         // Enable melody playback
-
-// Storage
-#define FEATURE_EEPROM_SETTINGS 1      // Save settings to EEPROM
+#define FEATURE_MICROPHONE_SENSOR 1    // Breath detection
+#define FEATURE_AUDIO_OUTPUT 1         // Melody playback
 ```
 
-### Breath Sensitivity Tuning
-
-Adjust thresholds in `config/config.h`:
+### Sensitivity Tuning (`config/config.h`)
 
 ```c
 #define BREATH_LIGHT_THRESHOLD 50      // Light breath trigger
 #define BREATH_STRONG_THRESHOLD 150    // Strong breath (melody trigger)
 ```
 
-Lower values = more sensitive  
-Higher values = less sensitive
+Lower values = more sensitive
 
-## Memory Usage
+## Project Structure
 
-- Flash: ~5KB (60-70% of 8KB)
-- RAM: ~150 bytes (25-30% of 512 bytes)
-
-Plenty of room for customization!
+```
+BlinkyTree/
+├── config.yaml                    # Song configuration (edit this!)
+├── songs/*.musicxml               # MusicXML song files
+├── src/main.cpp                   # Main application
+├── lib/
+│   ├── Audio/                     # Audio system
+│   │   ├── audio.h/cpp           # Core audio engine
+│   │   └── audio_songs_generated.* # Auto-generated from MusicXML
+│   ├── Lighting/                  # LED effects
+│   ├── Hardware/                  # GPIO/PWM/ADC abstraction
+│   └── Sensors/                   # Microphone processing
+├── scripts/
+│   ├── generate_audio_code.py    # MusicXML → C converter
+│   └── pre_build.py              # Build automation
+├── flash_firmware.bat/.sh         # Automated flashing scripts
+└── FLASHING_GUIDE.md             # Detailed flashing instructions
+```
 
 ## Troubleshooting
 
-### Upload Fails
-- Verify ISP programmer is connected correctly
-- Check COM port in `platformio.ini` matches your programmer
-- Ensure ATtiny85 has power (3-5V)
-- Try slower baud rate: `upload_speed = 9600`
+**LEDs not working:**
+- Check power supply (3-5V)
+- Verify LED polarity
+- Check current-limiting resistors (~220Ω)
 
-### LEDs Don't Light Up
-- Check LED polarity (anode/cathode)
-- Verify current-limiting resistors (220Ω recommended)
-- Test with brightness test mode (see `lighting.h`)
+**Microphone not responding:**
+- Adjust `BREATH_LIGHT_THRESHOLD` in `config/config.h`
+- Check microphone circuit connection (Pin 2)
+- Verify calibration during startup
 
-### Microphone Not Responding
-- Verify microphone circuit connection to Pin 2 (PB3)
-- Check baseline calibration value (should be ~200)
-- Adjust `BREATH_LIGHT_THRESHOLD` lower for higher sensitivity
+**Upload fails:**
+- Verify ISP connections (all 6 pins)
+- Check programmer COM port in `platformio.ini`
+- Try slower speed: `avrdude -c usbasp -B 10 ...`
+- Windows USBasp: Install driver with [Zadig](https://zadig.akeo.ie/)
 
-## Development
+See [FLASHING_GUIDE.md](FLASHING_GUIDE.md) for more details.
 
-### Adding New Melodies
+## Memory Usage
 
-1. Define notes in `lib/Audio/audio.cpp`:
-```c
-static const audio_note_t melody_my_song[] PROGMEM = {
-    {NOTE_C4, 500}, {NOTE_E4, 500}, {NOTE_G4, 1000},
-    {0, 0} // Terminator
-};
-```
-
-2. Add to melody list and register in `audio_init()`
-
-### Custom LED Effects
-
-1. Add effect enum in `lib/Lighting/lighting.h`
-2. Implement update function in `lib/Lighting/lighting.cpp`
-3. Call via `lighting_set_effect(YOUR_EFFECT)`
-
-## Adding Custom Songs (v2.0+)
-
-### Quick Start with GitHub Actions
-
-The easiest way to customize your BlinkyTree is to use GitHub Actions - no local setup required!
-
-1. **Fork this repository** on GitHub
-2. **Edit `config.yaml`** in the GitHub web interface:
-   - Enable/disable songs (`enabled: true/false`)
-   - Adjust `duty_cycle` (10-100) for volume/tone
-   - Adjust `speed` (25-200) for tempo
-   - Adjust `transpose` (-12 to +12) for pitch shifting
-3. **Commit changes** - GitHub Actions builds your firmware automatically
-4. **Download `.hex` file** from Actions → Artifacts
-5. **Flash to ATtiny85** using your AVR programmer
-
-### Adding New Songs from MusicXML
-
-#### Create/Export MusicXML
-- Use **MuseScore** (free): File → Export → MusicXML
-- Or **Finale/Sibelius** with MusicXML export
-- Requirements: Single melody, G3-B5 range, standard note durations
-
-#### Add to Repository
-1. Upload `.musicxml` file to `songs/` folder
-2. Add entry to `config.yaml`:
-   ```yaml
-   songs:
-     My_Song:
-       enabled: true
-       duty_cycle: 80
-       speed: 150
-       transpose: 0
-   ```
-3. Commit → Wait for build → Download firmware
-
-### Configuration Parameters
-
-- **duty_cycle** (10-100%): Buzzer PWM duty cycle (higher = louder)
-- **speed** (25-200%): Playback tempo (100% = original)
-- **transpose** (-12 to +12): Semitone pitch shift
-
-### Local Development
-
-```bash
-pip install pyyaml platformio
-pio run                    # Build
-pio run --target upload    # Upload to ATtiny85
-```
-
-The build system automatically parses MusicXML and generates C code.
+- **Flash:** ~5KB / 8KB (60-70%)
+- **RAM:** ~150 bytes / 512 bytes (25-30%)
 
 ## Resources
 
-- [ATtiny85 Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf)
-- [PlatformIO Documentation](https://docs.platformio.org/)
-- [AVR Libc Reference](https://www.nongnu.org/avr-libc/user-manual/index.html)
-
-## Hardware Design
-
-*PCB design and schematic documentation coming soon.*
+- **Hardware:** [BlinkyParts.com Kit](https://shop.blinkyparts.com/de/BlinkyTree-Interaktiver-Weihnachtsbaum-Loetbausatz/blink23179)
+- **Flashing Guide:** [FLASHING_GUIDE.md](FLASHING_GUIDE.md)
+- **ATtiny85 Datasheet:** [Microchip](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf)
+- **PlatformIO:** [docs.platformio.org](https://docs.platformio.org/)
 
 ## License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC-BY-NC 4.0).
+**CC-BY-NC 4.0** - Non-commercial use only
 
-You are free to:
-- **Share** — copy and redistribute the material
-- **Adapt** — remix, transform, and build upon the material
-
-Under the terms:
-- **Attribution** — Give appropriate credit to monkeyToneCircuits
-- **NonCommercial** — Not for commercial use
-
-See [LICENSE](LICENSE) for full details.
+You may share and adapt this project with attribution to **monkeyToneCircuits**.  
+See [LICENSE](LICENSE) for details.
 
 ---
 
