@@ -43,6 +43,8 @@ songs:
 ### Adding New Songs
 
 1. Export your melody as MusicXML (MuseScore: File → Export → MusicXML)
+   - ⚠️ **Important:** In MuseScore, export as **Uncompressed MusicXML** (not .mxl)
+   - File extension should be `.musicxml`
 2. Upload the `.musicxml` file to the `songs/` folder
 3. Add an entry in `config.yaml` with the same filename (without extension)
 4. Commit and push - GitHub Actions builds your custom firmware!
@@ -138,22 +140,31 @@ avrdude -c avrisp2 -P usb -p attiny85 -U flash:w:firmware.hex:i
 
 ## Configuration
 
-### Hardware Features (`config/config.h`)
+### Song Settings (`config.yaml`)
 
-```c
-#define FEATURE_CANDLE_EFFECT 1        // Realistic candle flickering
-#define FEATURE_MICROPHONE_SENSOR 1    // Breath detection
-#define FEATURE_AUDIO_OUTPUT 1         // Melody playback
+Edit `config.yaml` to customize songs - this is what most users will need:
+
+```yaml
+songs:
+  JINGLE_BELLS:
+    enabled: true
+    duty_cycle: 80      # Volume/tone (10-100)
+    speed: 150          # Tempo (25-200, 100=original)
+    transpose: 0        # Pitch shift (-12 to +12 semitones)
 ```
 
-### Sensitivity Tuning (`config/config.h`)
+### Advanced Hardware Settings (`config/config.h`)
+
+For advanced users who need to modify hardware behavior:
 
 ```c
-#define BREATH_LIGHT_THRESHOLD 50      // Light breath trigger
-#define BREATH_STRONG_THRESHOLD 150    // Strong breath (melody trigger)
+// Breath Sensitivity (song trigger)
+#define BREATH_STRONG_THRESHOLD 150    // Strong breath threshold for melody trigger
 ```
 
-Lower values = more sensitive
+Lower values = more sensitive, triggers songs more easily
+
+(if set too easy the Tree will start songs by itself)
 
 ## Project Structure
 
@@ -181,24 +192,21 @@ BlinkyTree/
 **LEDs not working:**
 - Check power supply (3-5V)
 - Verify LED polarity
-- Check current-limiting resistors (~220Ω)
 
 **Microphone not responding:**
-- Adjust `BREATH_LIGHT_THRESHOLD` in `config/config.h`
+- Adjust `BREATH_STRONG_THRESHOLD` in `config/config.h` (lower = more sensitive)
 - Check microphone circuit connection (Pin 2)
 - Verify calibration during startup
 
 **Upload fails:**
 - Verify ISP connections (all 6 pins)
 - Check programmer COM port in `platformio.ini`
-- Try slower speed: `avrdude -c usbasp -B 10 ...`
-- Windows USBasp: Install driver with [Zadig](https://zadig.akeo.ie/)
 
 See [FLASHING_GUIDE.md](FLASHING_GUIDE.md) for more details.
 
-## Memory Usage
+## Default Memory Usage
 
-- **Flash:** ~5KB / 8KB (60-70%)
+- **Flash:** ~5KB / 8KB (60-70%) 
 - **RAM:** ~150 bytes / 512 bytes (25-30%)
 
 ## Resources

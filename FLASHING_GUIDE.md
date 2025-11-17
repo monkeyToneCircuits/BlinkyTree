@@ -4,7 +4,7 @@ This guide is for users who want to upload custom firmware to their BlinkyTree w
 
 ## What You Need
 
-1. **Your BlinkyTree** (purchased from BlinkyParts.com or built yourself)
+1. **Your BlinkyTree** (purchased from BlinkyParts.com)
 2. **ISP Programmer** - One of these:
    - USBasp (most common, ~$3-5 on Amazon/eBay)
    - AVRISPv2 (official Atmel programmer)
@@ -44,26 +44,39 @@ You should now have a file called `firmware.hex`
 
 **Physical Connection:**
 
-1. **Connect ISP programmer to BlinkyTree:**
+1. **Prepare the PCB for programming:**
+   - ⚠️ **IMPORTANT:** The BlinkyTree PCB has 4 solder bridges near the ISP header
+   - These bridges are **cut by default** to reduce EMC interference during normal operation
+   - **Before flashing:** You must solder these 4 bridges closed to connect the programmer
+   - The bridges connect: MISO, MOSI, SCK, and RESET lines to the ISP header
+   - After flashing (optional): You can cut them again for better EMC performance
+
+2. **Connect ISP programmer to BlinkyTree:**
    - Locate the 6-pin header on the bottom of the BlinkyTree PCB
    - Connect the 6-pin ribbon cable from programmer to BlinkyTree
    - ⚠️ Check pin 1 orientation (usually marked with a triangle or dot)
 
 ```
-ISP Header (BlinkyTree PCB):
+ISP Header (BlinkyTree PCB): 
+
+⚠️ If the Connector is on the right side, the notch should face to you
+
 ┌─────────────┐
 │ MISO    VCC │ Pin 1-2
 │ SCK     MOSI│ Pin 3-4  
 │ RESET   GND │ Pin 5-6
 └─────────────┘
+
+Solder Bridges (must be closed for programming):
+[MISO] [MOSI] [SCK] [RESET]
 ```
 
-2. **Connect programmer to computer:**
+3. **Connect programmer to computer:**
    - Plug the USB cable into your computer
    - Windows should recognize the device
    - If not, you may need to install drivers (see Troubleshooting below)
 
-3. **Power the BlinkyTree:**
+4. **Power the BlinkyTree:**
    - Either power via ISP programmer (if it supplies power)
    - Or use batteries/external power supply (3-5V)
 
@@ -106,22 +119,11 @@ avrdude -c avrisp2 -P usb -p attiny85 -U flash:w:firmware.hex:i
 
 ## Troubleshooting
 
-### "Programmer not found" or "Device not recognized"
-
-**Windows USBasp Driver Issue:**
-1. Download [Zadig](https://zadig.akeo.ie/)
-2. Connect your USBasp
-3. Open Zadig → Options → List All Devices
-4. Select "USBasp" from the dropdown
-5. Install "WinUSB" or "libusb-win32" driver
-6. Try flashing again
-
 ### "Verification error" or "Flash failed"
 
 - **Check connections:** Make sure all 6 pins are properly connected
 - **Check power:** Measure voltage on VCC pin (should be 3-5V)
-- **Disconnect LEDs:** Remove or disconnect LED rings during flashing
-- **Try slower speed:** Add `-B 10` to avrdude command for slower programming
+
 
 ### "avrdude: error: could not find USB device"
 
@@ -132,7 +134,7 @@ avrdude -c avrisp2 -P usb -p attiny85 -U flash:w:firmware.hex:i
 
 ### "Target doesn't answer"
 
-- **RESET pin might be disabled** (if previously flashed with production firmware)
+- **RESET pin might be disabled** (if previously flashed with wrong Fuses)
   - This is not recoverable with standard ISP programmer
   - Need high-voltage programmer (HV programmer)
   - If bought from BlinkyParts, this shouldn't happen
@@ -193,7 +195,6 @@ avrdude -c usbasp -p attiny85 -U lfuse:w:0xE2:m -U hfuse:w:0xDF:m -U efuse:w:0xF
 - ⭐ Star the repository on GitHub
 - 🐛 Report bugs via Issues
 - 💡 Share your custom songs and improvements
-- 📸 Post your BlinkyTree on social media with #BlinkyTree
 
 ---
 
