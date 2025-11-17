@@ -3,11 +3,17 @@
 An interactive ATtiny85-powered Christmas tree with LED effects and breath-controlled interaction.
 
 <p align="center">
-  <img src="images/BlinkyTree_Front.jpg" width="70%" alt="BlinkyTree in Action" />
+  <img src="media/BlinkyTree_Front.jpg" width="70%" alt="BlinkyTree in Action" />
 </p>
 
 **Copyright (c) 2025 monkeyToneCircuits**  
 **Licensed under CC-BY-NC 4.0** - See [LICENSE](LICENSE) file for details.
+
+## Demo Video
+
+<video src="media/BlinkyTree_ShowRun.mp4" width="400" controls></video>
+
+*Video shows the candle effect, breath detection, and melody playback with LED frequency visualization.*
 
 ## Overview
 
