@@ -287,85 +287,6 @@ static const audio_note_t PROGMEM melody_schneeflockchen_weissrockchen[] = {
     {257, 1000},
 };
 
-// Song: PRIVATE_let-it-go-disneys-frozen (75 notes)
-static const audio_note_t PROGMEM melody_private_let_it_go_disneys_frozen[] = {
-    {515, 125},
-    {546, 125},
-    {344, 125},
-    {515, 250},
-    {546, 375},
-    {515, 125},
-    {546, 125},
-    {344, 125},
-    {546, 250},
-    {515, 250},
-    {307, 125},
-    {459, 125},
-    {515, 125},
-    {307, 125},
-    {459, 250},
-    {515, 250},
-    {307, 125},
-    {408, 500},
-    {365, 500},
-    {515, 125},
-    {546, 125},
-    {344, 125},
-    {515, 250},
-    {546, 375},
-    {546, 125},
-    {515, 125},
-    {344, 125},
-    {546, 250},
-    {515, 250},
-    {307, 125},
-    {459, 125},
-    {515, 125},
-    {307, 125},
-    {459, 250},
-    {515, 250},
-    {307, 125},
-    {408, 500},
-    {386, 375},
-    {307, 125},
-    {344, 250},
-    {344, 250},
-    {344, 250},
-    {344, 125},
-    {344, 125},
-    {344, 125},
-    {307, 125},
-    {273, 125},
-    {273, 375},
-    {273, 125},
-    {273, 125},
-    {307, 125},
-    {307, 250},
-    {307, 250},
-    {273, 125},
-    {257, 125},
-    {229, 625},
-    {0, 250},
-    {273, 125},
-    {307, 125},
-    {344, 125},
-    {344, 250},
-    {344, 125},
-    {344, 250},
-    {408, 125},
-    {408, 250},
-    {344, 375},
-    {0, 250},
-    {273, 125},
-    {273, 125},
-    {307, 125},
-    {344, 500},
-    {307, 125},
-    {273, 125},
-    {307, 625},
-    {0, 500},
-};
-
 // Test tone: 5-second A4 note
 static const audio_note_t PROGMEM melody_test_tone[] = {
     {440, 5000},  // A4 for 5 seconds
@@ -385,7 +306,6 @@ static const song_config_t song_configs[] = {
     [MELODY_OH_DU_FROHLICHE] = {85, 170, 8},  // Oh_du_frohliche
     [MELODY_KOMMET_IHR_HIRTEN] = {80, 160, 4},  // kommet-ihr-hirten
     [MELODY_SCHNEEFLOCKCHEN_WEISSROCKCHEN] = {75, 140, 7},  // Schneeflockchen_Weissrockchen
-    [MELODY_PRIVATE_LET_IT_GO_DISNEYS_FROZEN] = {75, 90, 4},  // PRIVATE_let-it-go-disneys-frozen
     [MELODY_TEST_TONE] = {80, 100, 0},  // Test tone
 };
 
@@ -395,9 +315,10 @@ static const song_config_t song_configs[] = {
 
 #if ENABLE_SONG_ROTATION
 const melody_id_t enabled_songs[] = {
-    MELODY_PRIVATE_LET_IT_GO_DISNEYS_FROZEN,
+    MELODY_OH_TANNENBAUM,
+    MELODY_STILLE_NACHT_CHIPVERSION,
 };
-const uint8_t ENABLED_SONG_COUNT = 1;
+const uint8_t ENABLED_SONG_COUNT = 2;
 #endif
 
 // ============================================================================
@@ -434,10 +355,6 @@ const audio_note_t *get_melody_data(melody_id_t melody_id, uint8_t *note_count)
     case MELODY_SCHNEEFLOCKCHEN_WEISSROCKCHEN:
         *note_count = sizeof(melody_schneeflockchen_weissrockchen) / sizeof(audio_note_t);
         return melody_schneeflockchen_weissrockchen;
-
-    case MELODY_PRIVATE_LET_IT_GO_DISNEYS_FROZEN:
-        *note_count = sizeof(melody_private_let_it_go_disneys_frozen) / sizeof(audio_note_t);
-        return melody_private_let_it_go_disneys_frozen;
 
     case MELODY_TEST_TONE:
         *note_count = sizeof(melody_test_tone) / sizeof(audio_note_t);
