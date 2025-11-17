@@ -31,7 +31,7 @@ project:
 songs:
   # Traditional German Christmas carol
   Oh_Tannenbaum:
-    enabled: true
+    enabled: false
     duty_cycle: 75
     speed: 150
     transpose: 9
