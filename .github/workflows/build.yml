@@ -72,6 +72,7 @@ jobs:
           .pio/build/attiny85_avrispv2/firmware.hex
           .pio/build/attiny85_avrispv2/firmware.elf
           flash_firmware.bat
+          flash_firmware.sh
           FLASHING_GUIDE.md
         retention-days: 90
         

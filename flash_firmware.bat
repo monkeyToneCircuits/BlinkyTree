@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 echo ========================================
 echo BlinkyTree Firmware Flasher
 echo ========================================
@@ -94,15 +95,27 @@ echo Using COM port: %COM_PORT%
 goto :CHECK_RESULT
 
 :FLASH_AUTO
-echo Trying USBasp programmer first...
+echo Trying AVRISPv2 on USB first...
 echo.
-"%AVRDUDE_PATH%" -C "%AVRDUDE_CONF%" -c usbasp -p attiny85 -U flash:w:firmware.hex:i
+"%AVRDUDE_PATH%" -C "%AVRDUDE_CONF%" -c avrisp2 -P usb -p attiny85 -U flash:w:firmware.hex:i 2>nul
 if %ERRORLEVEL% EQU 0 goto :SUCCESS
 
 echo.
-echo USBasp not found, trying AVRISPv2...
+echo AVRISPv2 USB not found, checking COM ports...
 echo.
-"%AVRDUDE_PATH%" -C "%AVRDUDE_CONF%" -c avrisp2 -P usb -p attiny85 -U flash:w:firmware.hex:i
+for /f "tokens=1" %%a in ('wmic path Win32_SerialPort get DeviceID ^| findstr "COM"') do (
+    echo Trying AVRISPv2 on %%a...
+    "%AVRDUDE_PATH%" -C "%AVRDUDE_CONF%" -c avrisp2 -P %%a -p attiny85 -U flash:w:firmware.hex:i 2>nul
+    if !ERRORLEVEL! EQU 0 (
+        echo Found AVRISPv2 on %%a
+        goto :SUCCESS
+    )
+)
+
+echo.
+echo AVRISPv2 not found, trying USBasp...
+echo.
+"%AVRDUDE_PATH%" -C "%AVRDUDE_CONF%" -c usbasp -p attiny85 -U flash:w:firmware.hex:i 2>nul
 if %ERRORLEVEL% EQU 0 goto :SUCCESS
 
 echo.
