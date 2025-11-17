@@ -59,7 +59,7 @@ songs:
     
   # German Christmas song "Kling, Glöckchen"
   Oh_du_frohliche:
-    enabled: true
+    enabled: false
     duty_cycle: 85
     speed: 170
     transpose: 8
