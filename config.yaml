@@ -18,8 +18,27 @@ project:
   author: "Dschi"
 
 # ============================================================================
-# SONG CONFIGURATION
+# HARDWARE CONFIGURATION
 # ============================================================================
+# User-adjustable hardware behavior settings
+
+hardware:
+  # LED system
+  led_brightness_default: 30     # Base LED brightness (10-100)
+  candle_flicker_speed: 150      # Candle flicker rate in ms (50-500, lower=faster)
+  candle_flicker_intensity: 70   # Flicker intensity percentage (20-100)
+  
+  # Audio system  
+  audio_max_frequency: 4000      # Maximum audio frequency (Hz)
+  audio_min_frequency: 100       # Minimum audio frequency (Hz)
+  audio_default_volume: 128      # Default audio volume (0-255)
+  song_cooldown: 3000           # Time between songs in ms (1000-10000)
+  note_separation: 50           # Gap between notes in ms (0-200)
+  startup_melody: false         # Play song at startup (true/false)
+  
+  # Sensor settings
+  breath_sensitivity: 1          # Breath detection threshold (1-100, lower=more sensitive)
+  sensor_update_rate: 5         # Sensor check interval in ms (1-50, lower=more responsive)
 # Each song can be configured with three parameters:
 #   duty_cycle: PWM duty cycle percentage (10-100%) - affects tone quality/volume
 #   speed: Playback speed percentage (25-200%) - 100% = original tempo
@@ -29,6 +48,14 @@ project:
 # The song key matches the MusicXML filename (without .musicxml extension).
 
 songs:
+  # Christmas Time - Bryan Adams - For Katja :)
+  traditional-music-i-saw-three-ships-come-sailing-in:
+      enabled: true
+      duty_cycle: 80
+      speed: 160
+      transpose: 7
+
+
   # Traditional German Christmas carol
   Oh_Tannenbaum:
     enabled: true
@@ -45,35 +72,35 @@ songs:
     
   # Upbeat Christmas favorite
   JINGLE_BELLS:
-    enabled: false
+    enabled: true
     duty_cycle: 85
     speed: 180
     transpose: 6
     
   # Traditional Christmas carol
   The_First_Noel_Trumpet_only:
-    enabled: false
+    enabled: true
     duty_cycle: 80
     speed: 140
     transpose: 8
     
   # German Christmas song "Kling, Glöckchen"
   Oh_du_frohliche:
-    enabled: false
+    enabled: true
     duty_cycle: 85
     speed: 170
     transpose: 8
     
   # German Christmas carol "Kommet, ihr Hirten"
   kommet-ihr-hirten:
-    enabled: false
+    enabled: true
     duty_cycle: 80
     speed: 160
     transpose: 4
     
   # German children's Christmas song
   Schneeflockchen_Weissrockchen:
-    enabled: false
+    enabled: true
     duty_cycle: 75
     speed: 140
     transpose: 7
@@ -117,15 +144,6 @@ led_mapping:
     
   LED_1ER:  # Highest notes
     min_frequency: 344  # C5 and above
-
-# ============================================================================
-# HARDWARE SETTINGS
-# ============================================================================
-hardware:
-  led_brightness_default: 30
-  audio_max_frequency: 4000
-  audio_min_frequency: 100
-  audio_default_volume: 128
 
 # ============================================================================
 # ADVANCED CONFIGURATION

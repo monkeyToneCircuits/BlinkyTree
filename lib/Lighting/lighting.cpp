@@ -122,7 +122,7 @@ void lighting_startup_animation(void)
 
 void lighting_update(void)
 {
-#if FEATURE_AUDIO_OUTPUT && AUDIO_REACTIVE_ENABLE
+#if FEATURE_AUDIO_OUTPUT
     // Skip normal lighting effects when a song is playing to allow audio-reactive lighting
     if (audio_is_song_playing())
     {
@@ -200,7 +200,7 @@ void lighting_update(void)
         static uint32_t last_update_time = 0; // Timing control like ATtiny13
 
         // Update candle flicker at configurable interval
-        if (current_time - last_update_time >= CANDLE_UPDATE_INTERVAL_MS)
+        if (current_time - last_update_time >= CANDLE_FLICKER_SPEED)
         {
             last_update_time = current_time;
 
@@ -224,12 +224,12 @@ void lighting_update(void)
                     medium_wave = 31 - medium_wave;
 
                 int16_t tip_brightness = (LED_BRIGHTNESS_DEFAULT * CANDLE_TIP_BRIGHTNESS_PCT) / 100; // Configurable base brightness
-                tip_brightness += ((fast_flicker - 31) * CANDLE_FLICKER_SCALE) / 100;                // Scaled dramatic variation
-                tip_brightness += ((medium_wave - 7) * 3 * CANDLE_FLICKER_SCALE) / 100;              // Scaled medium variation
-                tip_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_SCALE) / 200;            // Scaled slow variation
+                tip_brightness += ((fast_flicker - 31) * CANDLE_FLICKER_INTENSITY) / 100;                // Scaled dramatic variation
+                tip_brightness += ((medium_wave - 7) * 3 * CANDLE_FLICKER_INTENSITY) / 100;              // Scaled medium variation
+                tip_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_INTENSITY) / 200;            // Scaled slow variation
 
                 if (wind_gust)
-                    tip_brightness -= (30 * CANDLE_FLICKER_SCALE) / 100; // Scaled wind effect
+                    tip_brightness -= (30 * CANDLE_FLICKER_INTENSITY) / 100; // Scaled wind effect
 
                 // Apply microphone intensity boost - increased for better visibility (0-100 maps to 0-80 extra brightness)
                 tip_brightness += (g_lighting_state.candle_intensity_boost * 4 / 5);
@@ -252,12 +252,12 @@ void lighting_update(void)
                     medium_wave = 31 - medium_wave;
 
                 int16_t upper_brightness = (LED_BRIGHTNESS_DEFAULT * CANDLE_UPPER_BRIGHTNESS_PCT) / 100; // Configurable base brightness
-                upper_brightness += ((fast_flicker - 15) * CANDLE_FLICKER_SCALE) / 100;                  // Scaled variation
-                upper_brightness += ((medium_wave - 7) * 2 * CANDLE_FLICKER_SCALE) / 100;                // Scaled medium variation
-                upper_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_SCALE) / 300;              // Scaled slow variation
+                upper_brightness += ((fast_flicker - 15) * CANDLE_FLICKER_INTENSITY) / 100;                  // Scaled variation
+                upper_brightness += ((medium_wave - 7) * 2 * CANDLE_FLICKER_INTENSITY) / 100;                // Scaled medium variation
+                upper_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_INTENSITY) / 300;              // Scaled slow variation
 
                 if (wind_gust)
-                    upper_brightness -= (25 * CANDLE_FLICKER_SCALE) / 100; // Scaled wind effect
+                    upper_brightness -= (25 * CANDLE_FLICKER_INTENSITY) / 100; // Scaled wind effect
 
                 // Apply microphone intensity boost - increased (0-100 maps to 0-70 extra brightness)
                 upper_brightness += (g_lighting_state.candle_intensity_boost * 7 / 10);
@@ -280,12 +280,12 @@ void lighting_update(void)
                     medium_wave = 15 - medium_wave;
 
                 int16_t middle_brightness = (LED_BRIGHTNESS_DEFAULT * CANDLE_MIDDLE_BRIGHTNESS_PCT) / 100; // Configurable base brightness
-                middle_brightness += ((fast_flicker - 7) * CANDLE_FLICKER_SCALE) / 100;                    // Scaled variation
-                middle_brightness += ((medium_wave - 3) * 2 * CANDLE_FLICKER_SCALE) / 100;                 // Scaled medium variation
-                middle_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_SCALE) / 400;               // Scaled slow variation
+                middle_brightness += ((fast_flicker - 7) * CANDLE_FLICKER_INTENSITY) / 100;                    // Scaled variation
+                middle_brightness += ((medium_wave - 3) * 2 * CANDLE_FLICKER_INTENSITY) / 100;                 // Scaled medium variation
+                middle_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_INTENSITY) / 400;               // Scaled slow variation
 
                 if (wind_gust)
-                    middle_brightness -= (20 * CANDLE_FLICKER_SCALE) / 100; // Scaled wind effect
+                    middle_brightness -= (20 * CANDLE_FLICKER_INTENSITY) / 100; // Scaled wind effect
 
                 // Apply microphone intensity boost - increased (0-100 maps to 0-60 extra brightness)
                 middle_brightness += (g_lighting_state.candle_intensity_boost * 3 / 5);
@@ -308,12 +308,12 @@ void lighting_update(void)
                     slow_variation = 7 - slow_variation;
 
                 int16_t base_brightness = (LED_BRIGHTNESS_DEFAULT * CANDLE_BASE_BRIGHTNESS_PCT) / 100; // Configurable base brightness
-                base_brightness += ((gentle_flicker - 3) * 2 * CANDLE_FLICKER_SCALE) / 100;            // Scaled gentle variation
-                base_brightness += ((slow_variation - 1) * 2 * CANDLE_FLICKER_SCALE) / 100;            // Scaled very slow variation
-                base_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_SCALE) / 600;             // Scaled minimal slow variation
+                base_brightness += ((gentle_flicker - 3) * 2 * CANDLE_FLICKER_INTENSITY) / 100;            // Scaled gentle variation
+                base_brightness += ((slow_variation - 1) * 2 * CANDLE_FLICKER_INTENSITY) / 100;            // Scaled very slow variation
+                base_brightness += ((global_slow_wave - 31) * CANDLE_FLICKER_INTENSITY) / 600;             // Scaled minimal slow variation
 
                 if (wind_gust)
-                    base_brightness -= (12 * CANDLE_FLICKER_SCALE) / 100; // Scaled wind effect
+                    base_brightness -= (12 * CANDLE_FLICKER_INTENSITY) / 100; // Scaled wind effect
 
                 // Apply microphone intensity boost - increased (0-100 maps to 0-40 extra brightness)
                 base_brightness += (g_lighting_state.candle_intensity_boost * 2 / 5);
@@ -402,7 +402,6 @@ void lighting_set_candle_intensity_boost(uint8_t boost)
 
 void lighting_audio_reactive_note(uint16_t frequency)
 {
-#if AUDIO_REACTIVE_ENABLE
     // Skip silent notes (frequency = 0)
     if (frequency == 0)
     {
@@ -445,16 +444,13 @@ void lighting_audio_reactive_note(uint16_t frequency)
         PORTB |= (1 << PIN_LED_5ER); // Turn on LED_5ER directly
     }
     // LED_3ER: Not used - shared with microphone
-#endif // AUDIO_REACTIVE_ENABLE
 }
 
 void lighting_audio_reactive_off(void)
 {
-#if AUDIO_REACTIVE_ENABLE
     // Turn off audio-reactive LEDs directly - simple and fast (4-LED setup)
     PORTB &= ~(1 << PIN_LED_1ER); // Turn off LED_1ER
     PORTB &= ~(1 << PIN_LED_3ER); // Turn off LED_3ER - OK during songs
     PORTB &= ~(1 << PIN_LED_4ER); // Turn off LED_4ER
     PORTB &= ~(1 << PIN_LED_5ER); // Turn off LED_5ER
-#endif                            // AUDIO_REACTIVE_ENABLE
 }

@@ -50,8 +50,6 @@ static void audio_play_tone_blocking_configurable(uint16_t frequency, uint16_t d
 // PRIVATE HELPER FUNCTIONS
 // ============================================================================
 
-// Note: get_melody_data() is now provided by audio_songs_generated.cpp
-// Note: get_song_config() is now provided by audio_songs_generated.cpp
 
 // Transpose a frequency by semitones (positive = up, negative = down)
 // Uses fixed-point arithmetic to avoid floating point operations
@@ -244,7 +242,7 @@ void audio_play_melody_blocking(melody_id_t melody_id, uint8_t duty_cycle_percen
     uint32_t current_time = hardware_get_millis();
     g_audio_state.song_currently_playing = false;
     g_audio_state.song_end_time = current_time;
-    g_audio_state.cooldown_end_time = current_time + SONG_COOLDOWN_DURATION;
+    g_audio_state.cooldown_end_time = current_time + SONG_COOLDOWN_MS;
 
     // Force sensor recalibration after audio playback to handle shared pin charge buildup
 #if FEATURE_MICROPHONE_SENSOR

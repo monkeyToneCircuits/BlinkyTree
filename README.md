@@ -157,18 +157,28 @@ songs:
     transpose: 0        # Pitch shift (-12 to +12 semitones)
 ```
 
-### Advanced Hardware Settings (`config/config.h`)
+### Hardware Settings (`config.yaml`)
 
-For advanced users who need to modify hardware behavior:
+All hardware behavior can now be customized through `config.yaml`:
 
-```c
-// Breath Sensitivity (song trigger)
-#define BREATH_STRONG_THRESHOLD 150    // Strong breath threshold for melody trigger
+```yaml
+hardware:
+  # LED system
+  led_brightness_default: 30     # Base LED brightness (10-100)
+  candle_flicker_speed: 150      # Candle flicker rate in ms (50-500, lower=faster)
+  candle_flicker_intensity: 70   # Flicker intensity percentage (20-100)
+  
+  # Audio system  
+  song_cooldown: 3000           # Time between songs in ms (1000-10000)
+  note_separation: 50           # Gap between notes in ms (0-200)
+  startup_melody: false         # Play song at startup (true/false)
+  
+  # Sensor settings
+  breath_sensitivity: 1          # Breath detection threshold (1-50, lower=more sensitive)
+  sensor_update_rate: 5         # Sensor check interval in ms (1-50, lower=more responsive)
 ```
 
-Lower values = more sensitive, triggers songs more easily
-
-(if set too easy the Tree will start songs by itself)
+These settings are automatically converted to firmware configuration during compilation.
 
 ## Project Structure
 

@@ -14,6 +14,11 @@
  */
 
 // ============================================================================
+// INCLUDE GENERATED CONFIGURATION - Takes precedence over defaults below
+// ============================================================================
+#include "hardware_config_generated.h"
+
+// ============================================================================
 // PROJECT INFORMATION
 // ============================================================================
 #define PROJECT_NAME "BlinkyTree"
@@ -92,23 +97,29 @@
 #endif
 
 // ============================================================================
-// FEATURE CONFIGURATION
+// DEFAULT CONFIGURATION - Fallback values if not overridden by generated config
 // ============================================================================
 
 // LED System Configuration
 #define LED_COUNT 4
-#define LED_BRIGHTNESS_DEFAULT 30 // Reduced from 30 - dimmer baseline for better breath visibility
-#define LED_BRIGHTNESS_MIN 10     // Reduced from 10 - allows even dimmer base
+#ifndef LED_BRIGHTNESS_DEFAULT
+#define LED_BRIGHTNESS_DEFAULT 30 // Fallback: dimmer baseline for better breath visibility
+#endif
+#define LED_BRIGHTNESS_MIN 10     // Minimum brightness (not configurable via YAML)
 
-// Audio System Configuration
-// Note: BUZZER_PIN defined in pin assignments above
-// Audio frequency and volume settings (duplicated from audio.h)
+// Audio System Configuration - Fallback values
+#ifndef AUDIO_MAX_FREQUENCY
 #define AUDIO_MAX_FREQUENCY 4000 // Hz
+#endif
+#ifndef AUDIO_MIN_FREQUENCY
 #define AUDIO_MIN_FREQUENCY 100  // Hz
+#endif
+#ifndef AUDIO_DEFAULT_VOLUME
 #define AUDIO_DEFAULT_VOLUME 128 // 0-255
-
-// Note separation - small gap between notes to distinguish identical consecutive notes
-#define AUDIO_NOTE_GAP_MS 50 // Milliseconds of silence between notes (prevents identical notes from blending)
+#endif
+#ifndef AUDIO_NOTE_GAP_MS
+#define AUDIO_NOTE_GAP_MS 50 // Milliseconds of silence between notes
+#endif
 
 // ============================================================================
 // AUDIO SYSTEM CONFIGURATION
@@ -134,7 +145,7 @@
 #define SONG_ROTATION_MODE 1        // 0=random selection, 1=sequential order
 
 // Startup Configuration
-#define PLAY_STARTUP_MELODY 1 // Play current rotation song at startup (1=enabled, 0=disabled)
+#define PLAY_STARTUP_MELODY 0 // Play current rotation song at startup (1=enabled, 0=disabled)
 #define ENABLE_STARTUP_ANIMATION 1 // Visual startup animation - bottom to top LED sequence (1=enabled, 0=disabled)
 
 // ============================================================================
@@ -145,29 +156,39 @@
 #define EEPROM_ADDR_SONG_ROTATION_INDEX 0x00 // Persistent song rotation index (1 byte)
 
 // ============================================================================
-// SENSOR SYSTEM CONFIGURATION
+// SENSOR SYSTEM CONFIGURATION - Fallback values
 // ============================================================================
 
 // PWM-Based Microphone Sampling for PB3 (LED_3ER + Microphone sharing in DEBUG builds)
 // Samples microphone during natural LOW periods of LED_3ER's PWM cycle
 // This allows very frequent sampling (potentially hundreds of times per second) without visible LED impact
 #define MIC_SAMPLE_INTERVAL_MIN 1     // Sample every Nth PWM cycle during LOW periods (higher = less frequent sampling)
-#define SENSOR_UPDATE_INTERVAL_MS 5  // How often sensors_update() reads microphone (lower = more responsive, 1-50ms recommended)
 
-// Breath Detection Thresholds
+#ifndef SENSOR_UPDATE_RATE_MS
+#define SENSOR_UPDATE_RATE_MS 5  // How often sensors_update() reads microphone (lower = more responsive, 1-50ms recommended)
+#endif
+
+// Breath Detection Thresholds - Fallback values
 // Lower values = more sensitive, higher values = less sensitive
 // Note: Baseline is now dynamically calibrated, only thresholds are static
+#ifndef BREATH_SENSITIVITY
+#define BREATH_SENSITIVITY 10       // Unified breath sensitivity (replaces separate thresholds)
+#endif
+
 #define BREATH_LIGHT_THRESHOLD 1       // Light breath threshold for LED response
 #define BREATH_STRONG_THRESHOLD 1     // Strong breath threshold for audio trigger (lower = more sensitive)
 #define BREATH_STRONG_MIN_DURATION 2   // Number of consecutive readings above strong threshold (very fast sampling = 1 is enough)
-#define SONG_COOLDOWN_DURATION 3000    // Cooldown period (ms) after song ends - prevents rapid re-triggering
+
+#ifndef SONG_COOLDOWN_MS
+#define SONG_COOLDOWN_MS 3000    // Cooldown period (ms) after song ends - prevents rapid re-triggering
+#endif
 
 // LED Breath Response - Simple linear mapping for consistent behavior
 #define LED_BREATH_MIN_BOOST 40  // Minimum LED boost (0-255) for barely detectable breath
 #define LED_BREATH_MAX_BOOST 200 // Maximum LED boost (0-255) for strong breath (below audio trigger)
 
 // ============================================================================
-// LIGHTING SYSTEM CONFIGURATION
+// LIGHTING SYSTEM CONFIGURATION - Fallback values
 // ============================================================================
 
 // Candle Effect Base Brightness - Percentage values that scale with LED_BRIGHTNESS_DEFAULT
@@ -177,11 +198,6 @@
 #define CANDLE_MIDDLE_BRIGHTNESS_PCT 40 // Middle LED brightness as % of LED_BRIGHTNESS_DEFAULT
 #define CANDLE_BASE_BRIGHTNESS_PCT 20   // Base LED brightness as % of LED_BRIGHTNESS_DEFAULT
 
-// Audio-Reactive Light Effect Configuration
-// LED ring activation based on musical note ranges during song playback
-// LOGICAL MAPPING: Higher notes light up lower-numbered rings (top to bottom)
-// SIMPLE CONTROL: Direct pin manipulation - LEDs are either ON or OFF (no PWM)
-#define AUDIO_REACTIVE_ENABLE 1 // Enable audio-reactive light effect during songs (1=enabled, 0=disabled)
 
 // Note thresholds for LED ring activation (using note definitions from audio.h)
 // LED rings light up when played note frequency falls in their range
@@ -200,8 +216,12 @@
 #define AUDIO_NOTE_LED_4ER_MAX NOTE_G4
 #define AUDIO_NOTE_LED_5ER_MAX NOTE_E4  // LED_5ER (base): E4 (216 Hz) and below - bass notes (E4 and lower)
 
-// Candle Flicker Configuration
-#define CANDLE_UPDATE_INTERVAL_MS 150 // Candle flicker update frequency in milliseconds (lower = faster, more visible flicker)
-#define CANDLE_FLICKER_SCALE 70      // Percentage of normal flicker intensity (100% = full dramatic flicker for realistic candle effect)
+// Candle Flicker Configuration - Fallback values
+#ifndef CANDLE_FLICKER_SPEED
+#define CANDLE_FLICKER_SPEED 150 // Candle flicker update frequency in milliseconds (lower = faster, more visible flicker)
+#endif
+#ifndef CANDLE_FLICKER_INTENSITY
+#define CANDLE_FLICKER_INTENSITY 70      // Percentage of normal flicker intensity (100% = full dramatic flicker for realistic candle effect)
+#endif
 
 #endif // CONFIG_H_
