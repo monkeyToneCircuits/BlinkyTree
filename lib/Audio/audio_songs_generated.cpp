@@ -19,6 +19,42 @@
 // All melody data stored in PROGMEM to save RAM
 // ============================================================================
 
+// Song: traditional-music-i-saw-three-ships-come-sailing-in (32 notes)
+static const audio_note_t PROGMEM melody_traditional_music_i_saw_three_ships_come_sailing_in[] = {
+    {192, 250},
+    {257, 500},
+    {257, 250},
+    {290, 500},
+    {326, 250},
+    {386, 500},
+    {326, 250},
+    {290, 500},
+    {344, 250},
+    {326, 500},
+    {257, 250},
+    {257, 500},
+    {326, 250},
+    {290, 500},
+    {243, 250},
+    {192, 500},
+    {192, 250},
+    {257, 500},
+    {257, 250},
+    {290, 500},
+    {326, 250},
+    {386, 500},
+    {326, 250},
+    {290, 500},
+    {344, 250},
+    {326, 500},
+    {257, 250},
+    {257, 250},
+    {290, 250},
+    {326, 250},
+    {290, 750},
+    {257, 500},
+};
+
 // Song: Oh_Tannenbaum (47 notes)
 static const audio_note_t PROGMEM melody_oh_tannenbaum[] = {
     {192, 500},
@@ -70,7 +106,7 @@ static const audio_note_t PROGMEM melody_oh_tannenbaum[] = {
     {257, 1000},
 };
 
-// Song: Stille_Nacht_ChipVersion (46 notes)
+// Song: Stille_Nacht_ChipVersion (23 notes)
 static const audio_note_t PROGMEM melody_stille_nacht_chipversion[] = {
     {257, 750},
     {290, 250},
@@ -95,29 +131,6 @@ static const audio_note_t PROGMEM melody_stille_nacht_chipversion[] = {
     {290, 250},
     {257, 500},
     {216, 1500},
-    {290, 1000},
-    {290, 500},
-    {344, 750},
-    {326, 250},
-    {290, 500},
-    {257, 750},
-    {290, 250},
-    {257, 500},
-    {216, 1500},
-    {386, 1000},
-    {386, 500},
-    {459, 750},
-    {386, 250},
-    {326, 500},
-    {344, 1500},
-    {433, 1500},
-    {344, 500},
-    {257, 500},
-    {216, 500},
-    {257, 750},
-    {229, 250},
-    {192, 500},
-    {172, 1500},
 };
 
 // Song: JINGLE_BELLS (29 notes)
@@ -299,6 +312,7 @@ static const audio_note_t PROGMEM melody_test_tone[] = {
 
 static const song_config_t song_configs[] = {
     [MELODY_NONE] = {50, 100, 0},  // Default fallback
+    [MELODY_TRADITIONAL_MUSIC_I_SAW_THREE_SHIPS_COME_SAILING_IN] = {80, 160, 7},  // traditional-music-i-saw-three-ships-come-sailing-in
     [MELODY_OH_TANNENBAUM] = {75, 150, 9},  // Oh_Tannenbaum
     [MELODY_STILLE_NACHT_CHIPVERSION] = {75, 150, 8},  // Stille_Nacht_ChipVersion
     [MELODY_JINGLE_BELLS] = {85, 180, 6},  // JINGLE_BELLS
@@ -315,10 +329,16 @@ static const song_config_t song_configs[] = {
 
 #if ENABLE_SONG_ROTATION
 const melody_id_t enabled_songs[] = {
+    MELODY_TRADITIONAL_MUSIC_I_SAW_THREE_SHIPS_COME_SAILING_IN,
     MELODY_OH_TANNENBAUM,
     MELODY_STILLE_NACHT_CHIPVERSION,
+    MELODY_JINGLE_BELLS,
+    MELODY_THE_FIRST_NOEL_TRUMPET_ONLY,
+    MELODY_OH_DU_FROHLICHE,
+    MELODY_KOMMET_IHR_HIRTEN,
+    MELODY_SCHNEEFLOCKCHEN_WEISSROCKCHEN,
 };
-const uint8_t ENABLED_SONG_COUNT = 2;
+const uint8_t ENABLED_SONG_COUNT = 8;
 #endif
 
 // ============================================================================
@@ -328,6 +348,10 @@ const uint8_t ENABLED_SONG_COUNT = 2;
 const audio_note_t *get_melody_data(melody_id_t melody_id, uint8_t *note_count)
 {
     switch (melody_id) {
+    case MELODY_TRADITIONAL_MUSIC_I_SAW_THREE_SHIPS_COME_SAILING_IN:
+        *note_count = sizeof(melody_traditional_music_i_saw_three_ships_come_sailing_in) / sizeof(audio_note_t);
+        return melody_traditional_music_i_saw_three_ships_come_sailing_in;
+
     case MELODY_OH_TANNENBAUM:
         *note_count = sizeof(melody_oh_tannenbaum) / sizeof(audio_note_t);
         return melody_oh_tannenbaum;
