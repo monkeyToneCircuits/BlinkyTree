@@ -32,7 +32,7 @@ hardware:
   audio_max_frequency: 4000      # Maximum audio frequency (Hz)
   audio_min_frequency: 100       # Minimum audio frequency (Hz)
   audio_default_volume: 128      # Default audio volume (0-255)
-  song_cooldown: 3000           # Time between songs in ms (1000-10000)
+  song_cooldown: 1000           # Time between songs in ms (1000-10000)
   note_separation: 50           # Gap between notes in ms (0-200)
   startup_melody: false         # Play song at startup (true/false)
   
