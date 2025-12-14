@@ -5,9 +5,16 @@
 # Licensed under CC-BY-NC 4.0
 # https://creativecommons.org/licenses/by-nc/4.0/
 #
-# This configuration file controls which songs are enabled and their playback settings.
+# This configuration file allows you to customize song parameters.
 # After editing, commit changes and push to GitHub. The GitHub Action will automatically
 # compile a new firmware hex file with your custom song selection.
+#
+# IMPORTANT: Song configuration is now OPTIONAL!
+# - All .musicxml files in the songs/ folder are automatically included
+# - If a song is NOT listed in the 'songs' section, it will use default values
+# - Songs default to enabled=true, duty_cycle=75, speed=100, transpose=0
+# - You can override any individual parameter (enabled, duty_cycle, speed, transpose)
+# - Missing parameters will use the default values
 
 # ============================================================================
 # PROJECT INFORMATION
@@ -39,22 +46,55 @@ hardware:
   # Sensor settings
   breath_sensitivity: 1          # Breath detection threshold (1-100, lower=more sensitive)
   sensor_update_rate: 5         # Sensor check interval in ms (1-50, lower=more responsive)
-# Each song can be configured with three parameters:
-#   duty_cycle: PWM duty cycle percentage (10-100%) - affects tone quality/volume
-#   speed: Playback speed percentage (25-200%) - 100% = original tempo
-#   transpose: Semitones to shift pitch (-12 to +12) - 0 = original key
+
+# ============================================================================
+# SONG CONFIGURATION (OPTIONAL)
+# ============================================================================
+# All .musicxml files in the songs/ folder are automatically included when compiling.
+# Use this section to customize specific songs or disable them.
 #
-# Songs are loaded from MusicXML files in the songs/ folder.
-# The song key matches the MusicXML filename (without .musicxml extension).
+# Default values (used when song is not listed here):
+#   enabled: true        - Song will be included in rotation
+#   duty_cycle: 75       - PWM duty cycle percentage (10-100%)
+#   speed: 100           - Playback speed percentage (25-200%, 100% = original tempo)
+#   transpose: 0         - Semitones to shift pitch (-12 to +12, 0 = original key)
+#
+# You can override any individual parameter. For example:
+#   MySong:
+#     speed: 120         - Only changes speed, other parameters use defaults
+#
+# To disable a song, set enabled: false
+# To remove a song completely, delete its .musicxml file from the songs/ folder
+#
+# The song key must match the MusicXML filename (without .musicxml extension).
+#
+# EXAMPLES:
+#   # Example 1: Song not listed here - uses all defaults (enabled, 75, 100, 0)
+#   
+#   # Example 2: Disable a specific song
+#   MySong:
+#     enabled: false
+#   
+#   # Example 3: Only change speed, rest uses defaults
+#   AnotherSong:
+#     speed: 120
+#   
+#   # Example 4: Full configuration
+#   YetAnotherSong:
+#     enabled: true
+#     duty_cycle: 80
+#     speed: 150
+#     transpose: 5
 
 songs:
-  # Christmas Time - Bryan Adams - For Katja :)
-  traditional-music-i-saw-three-ships-come-sailing-in:
-      enabled: true
-      duty_cycle: 80
-      speed: 160
-      transpose: 7
 
+
+  # Traditional German Christmas carol
+  traditional-music-i-saw-three-ships-come-sailing-in:
+    enabled: false
+    duty_cycle: 75
+    speed: 150
+    transpose: 9
 
   # Traditional German Christmas carol
   Oh_Tannenbaum:

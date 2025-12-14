@@ -207,20 +207,29 @@ def generate_song_data(song_name: str, notes: List[Tuple[int, int]]) -> str:
     return '\n'.join(lines)
 
 
-def generate_config_array(config: Dict) -> str:
-    """Generate song_configs array"""
-    songs = config.get('songs', {})
+def generate_config_array(config: Dict, all_songs: Dict) -> str:
+    """Generate song_configs array with defaults for missing configurations"""
+    yaml_songs = config.get('songs', {})
+    
+    # Default values
+    DEFAULT_DUTY_CYCLE = 75
+    DEFAULT_SPEED = 100
+    DEFAULT_TRANSPOSE = 0
     
     lines = [
         "static const song_config_t song_configs[] = {",
         "    [MELODY_NONE] = {50, 100, 0},  // Default fallback",
     ]
     
-    for song_name, song_config in songs.items():
+    for song_name in all_songs.keys():
         identifier = sanitize_identifier(song_name)
-        duty = song_config.get('duty_cycle', 75)
-        speed = song_config.get('speed', 100)
-        transpose = song_config.get('transpose', 0)
+        
+        # Get configuration from YAML or use defaults
+        song_config = yaml_songs.get(song_name, {})
+        duty = song_config.get('duty_cycle', DEFAULT_DUTY_CYCLE)
+        speed = song_config.get('speed', DEFAULT_SPEED)
+        transpose = song_config.get('transpose', DEFAULT_TRANSPOSE)
+        
         lines.append(f"    [MELODY_{identifier}] = {{{duty}, {speed}, {transpose}}},  // {song_name}")
     
     lines.append("    [MELODY_TEST_TONE] = {80, 100, 0},  // Test tone")
@@ -229,21 +238,30 @@ def generate_config_array(config: Dict) -> str:
     return '\n'.join(lines)
 
 
-def generate_enabled_songs(config: Dict) -> str:
-    """Generate enabled_songs array"""
-    songs = config.get('songs', {})
+def generate_enabled_songs(config: Dict, all_songs: Dict) -> str:
+    """Generate enabled_songs array - enable all songs by default unless explicitly disabled"""
+    yaml_songs = config.get('songs', {})
     
-    enabled_count = sum(1 for song_config in songs.values() if song_config.get('enabled', False))
+    # Default: enable songs unless explicitly set to false in YAML
+    enabled_list = []
+    for song_name in all_songs.keys():
+        song_config = yaml_songs.get(song_name, {})
+        # If song is not in YAML, default to enabled=true
+        # If song is in YAML, use the 'enabled' value (default to true if not specified)
+        is_enabled = song_config.get('enabled', True)
+        if is_enabled:
+            enabled_list.append(song_name)
+    
+    enabled_count = len(enabled_list)
     
     lines = [
         "#if ENABLE_SONG_ROTATION",
         "const melody_id_t enabled_songs[] = {",
     ]
     
-    for song_name, song_config in songs.items():
-        if song_config.get('enabled', False):
-            identifier = sanitize_identifier(song_name)
-            lines.append(f"    MELODY_{identifier},")
+    for song_name in enabled_list:
+        identifier = sanitize_identifier(song_name)
+        lines.append(f"    MELODY_{identifier},")
     
     lines.append("};")
     lines.append(f"const uint8_t ENABLED_SONG_COUNT = {enabled_count};")
@@ -375,15 +393,21 @@ def main():
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
     
-    songs = config.get('songs', {})
+    # Scan all MusicXML files in the songs directory
+    print(f"\nScanning {songs_dir} for MusicXML files...")
+    musicxml_files = list(songs_dir.glob('*.musicxml'))
+    
+    if not musicxml_files:
+        print(f"Error: No MusicXML files found in {songs_dir}", file=sys.stderr)
+        return 1
+    
+    print(f"Found {len(musicxml_files)} MusicXML file(s)")
     
     # Parse all MusicXML files
     song_data = {}
-    for song_name, song_config in songs.items():
-        musicxml_file = songs_dir / f"{song_name}.musicxml"
-        if not musicxml_file.exists():
-            print(f"Warning: MusicXML file not found: {musicxml_file}", file=sys.stderr)
-            continue
+    for musicxml_file in sorted(musicxml_files):
+        # Extract song name from filename (without .musicxml extension)
+        song_name = musicxml_file.stem
         
         print(f"Parsing {song_name}...")
         parser = MusicXMLParser(musicxml_file)
@@ -424,7 +448,7 @@ def main():
 // MELODY ENUMERATION
 // ============================================================================
 
-{generate_melody_enum(songs)}
+{generate_melody_enum(song_data)}
 
 // ============================================================================
 // FUNCTION DECLARATIONS
@@ -488,22 +512,22 @@ static const audio_note_t PROGMEM melody_test_tone[] = {
 {chr(10).join(all_song_data)}
 
 // ============================================================================
-// SONG CONFIGURATIONS - From config.yaml
+// SONG CONFIGURATIONS - From config.yaml (with defaults)
 // ============================================================================
 
-{generate_config_array(config)}
+{generate_config_array(config, song_data)}
 
 // ============================================================================
-// ENABLED SONGS LIST - From config.yaml
+// ENABLED SONGS LIST - From config.yaml (enabled by default)
 // ============================================================================
 
-{generate_enabled_songs(config)}
+{generate_enabled_songs(config, song_data)}
 
 // ============================================================================
 // ACCESSOR FUNCTIONS
 // ============================================================================
 
-{generate_get_melody_data(songs)}
+{generate_get_melody_data(song_data)}
 
 const song_config_t *get_song_config(melody_id_t melody_id)
 {{
